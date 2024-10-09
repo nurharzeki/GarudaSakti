@@ -95,7 +95,7 @@
                 android:id="@+id/buttonToHomePendaftaranBerhasil"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#0046AA"
+                android:backgroundTint="#1464BE"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Ke Halaman Utama"
                 android:textSize="16sp"
