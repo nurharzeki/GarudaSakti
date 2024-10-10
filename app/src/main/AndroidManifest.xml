@@ -13,9 +13,14 @@
         android:theme="@style/Theme.GarudaSakti"
         tools:targetApi="31">
         <activity
+            android:name=".MembershipActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PesananSayaActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfilActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".PendaftaranBerhasilActivity"
             android:exported="false" />
@@ -30,9 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -41,9 +44,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
 
         <meta-data
             android:name="preloaded_fonts"
