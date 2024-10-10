@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.garudasakti.R
-import com.example.garudasakti.models.Lapangan
+import com.example.garudasakti.models.LapanganHome
 
-class LapanganAdapter (private var data: ArrayList<Lapangan>): RecyclerView.Adapter<LapanganAdapter.LapanganHolder>()  {
+class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.Adapter<LapanganAdapter.LapanganHolder>()  {
 
     private lateinit var LapanganListener: clickListener
 
-    fun setListLapangan (data: ArrayList<Lapangan>){
+    fun setListLapangan (data: ArrayList<LapanganHome>){
         this.data = data
         notifyDataSetChanged()
     }
@@ -31,7 +31,7 @@ class LapanganAdapter (private var data: ArrayList<Lapangan>): RecyclerView.Adap
         private val jenis: TextView = itemView.findViewById(R.id.textJenisLapangan)
         private val harga: TextView = itemView.findViewById(R.id.textHargaLapangan)
 
-        fun bind(data: Lapangan){
+        fun bind(data: LapanganHome){
             nama.text = data.nama
             jenis.text = data.jenis
             harga.text = data.harga.toString()

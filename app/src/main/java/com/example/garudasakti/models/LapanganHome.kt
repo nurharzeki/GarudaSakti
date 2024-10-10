@@ -1,6 +1,6 @@
 package com.example.garudasakti.models
 
-data class Lapangan (
+data class LapanganHome (
     val nama : String,
     val jenis : String,
     val alas : String,
