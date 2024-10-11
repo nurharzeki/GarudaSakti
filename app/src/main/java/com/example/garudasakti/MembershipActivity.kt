@@ -71,7 +71,7 @@ class MembershipActivity : AppCompatActivity() {
         val buttonKetentuanMembershipNonMember = findViewById<Button>(R.id.buttonKetentuanMembershipNonMember)
 
         // Data dummy untuk simulasi
-        val isMember = false // Ubah ini ke false jika ingin menguji kondisi non-member
+        val isMember = true // Ubah ini ke false jika ingin menguji kondisi non-member
         val namaMember = "Harriko Nur Harzeki"
         val usernameMember = "nurharzeki"
         val emailMember = "nurharzeki@gmail.com"

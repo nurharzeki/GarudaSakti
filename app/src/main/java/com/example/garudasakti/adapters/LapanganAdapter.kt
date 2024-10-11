@@ -3,6 +3,7 @@ package com.example.garudasakti.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.garudasakti.R
@@ -29,12 +30,16 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         //tambahkan inisialisasi view disini
         private val nama: TextView =itemView.findViewById(R.id.textNamaLapangan)
         private val jenis: TextView = itemView.findViewById(R.id.textJenisLapangan)
-        private val harga: TextView = itemView.findViewById(R.id.textHargaLapangan)
+        private val harga: TextView = itemView.findViewById(R.id.textHargaUmumLapanganHome)
+        private val hargaMember: TextView = itemView.findViewById(R.id.textHargaMemberLapanganHome)
+
+        val btnDetail: Button = itemView.findViewById(R.id.buttonDetailLapangan)
 
         fun bind(data: LapanganHome){
             nama.text = data.nama
             jenis.text = data.jenis
             harga.text = data.harga.toString()
+            hargaMember.text = data.hargaMember.toString()
         }
 
     }
@@ -56,6 +61,12 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         holder.itemView.setOnClickListener {
             LapanganListener.onItemClick(position)
         }
+
+        // Menambahkan click listener untuk tombol detail lapangan
+        holder.btnDetail.setOnClickListener {
+            LapanganListener.onItemClick(position)
+        }
+
     }
 
 

@@ -87,7 +87,7 @@
                     android:hint="E-mail"
                     android:inputType="text"
                     android:paddingStart="44dp"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     tools:ignore="TextSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -116,7 +116,7 @@
                     android:hint="Password"
                     android:inputType="textPassword"
                     android:paddingStart="44dp"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     tools:ignore="TextSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 

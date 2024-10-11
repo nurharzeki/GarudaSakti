@@ -92,7 +92,7 @@
                     android:hint="Masukkan kode verifikasi"
                     android:inputType="textPassword"
                     android:paddingStart="44dp"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     tools:ignore="TextSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
