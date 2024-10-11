@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/pages_bg"
+    tools:context=".PemesananActivity">
+
+    <TextView
+        android:id="@+id/textHeaderPemesanan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="#D9FFFFFF"
+        android:fontFamily="@font/ar_one_sans"
+        android:text="Garuda Sakti Sport Hall"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navBarPemesanan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:backgroundTint="#E6EBF8FF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_bar"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewMembership"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="#DEF0F8FF"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/navBarPemesanan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textHeaderPemesanan">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textHeaderNamaLapanganPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nama Lapangan"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/ar_one_sans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Lapangan"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textHeaderNamaLapanganPemesanan"
+                tools:ignore="TextSizeCheck" />
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Jenis"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toStartOf="@+id/textView19"
+                app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+            <TextView
+                android:id="@+id/textView34"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Alas"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toStartOf="@+id/textView25"
+                app:layout_constraintTop_toBottomOf="@+id/textView25" />
+
+            <TextView
+                android:id="@+id/textView35"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Harga Umum"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toStartOf="@+id/textView34"
+                app:layout_constraintTop_toBottomOf="@+id/textView34" />
+
+            <TextView
+                android:id="@+id/textView36"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Harga Member"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toStartOf="@+id/textView35"
+                app:layout_constraintTop_toBottomOf="@+id/textView35" />
+
+            <TextView
+                android:id="@+id/textView37"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:text=":"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toBottomOf="@+id/textView36"
+                app:layout_constraintStart_toEndOf="@+id/textView36" />
+
+            <TextView
+                android:id="@+id/textView39"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text=":"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toTopOf="@+id/textView37"
+                app:layout_constraintStart_toStartOf="@+id/textView37" />
+
+            <TextView
+                android:id="@+id/textView40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text=":"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toTopOf="@+id/textView39"
+                app:layout_constraintStart_toStartOf="@+id/textView39" />
+
+            <TextView
+                android:id="@+id/textView43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text=":"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toTopOf="@+id/textView40"
+                app:layout_constraintStart_toStartOf="@+id/textView40" />
+
+            <TextView
+                android:id="@+id/textView45"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text=":"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toTopOf="@+id/textView43"
+                app:layout_constraintStart_toStartOf="@+id/textView43" />
+
+            <TextView
+                android:id="@+id/textNamaLapanganPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Nama Lapangan"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toEndOf="@+id/textView45"
+                app:layout_constraintTop_toTopOf="@+id/textView45" />
+
+            <TextView
+                android:id="@+id/textJenisLapanganPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="Jenis"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toEndOf="@+id/textView43"
+                app:layout_constraintTop_toBottomOf="@+id/textNamaLapanganPemesanan" />
+
+            <TextView
+                android:id="@+id/textAlasLapanganPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="Alas"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toEndOf="@+id/textView40"
+                app:layout_constraintTop_toBottomOf="@+id/textJenisLapanganPemesanan" />
+
+            <TextView
+                android:id="@+id/textHargaUmumPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="000"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toEndOf="@+id/textView39"
+                app:layout_constraintTop_toBottomOf="@+id/textAlasLapanganPemesanan" />
+
+            <TextView
+                android:id="@+id/textHargaMemberPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="000"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintStart_toEndOf="@+id/textView37"
+                app:layout_constraintTop_toBottomOf="@+id/textHargaUmumPemesanan" />
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="/ Jam"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toBottomOf="@+id/textHargaMemberPemesanan"
+                app:layout_constraintStart_toEndOf="@+id/textHargaMemberPemesanan" />
+
+            <TextView
+                android:id="@+id/textView52"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="4dp"
+                android:text="/ Jam"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                tools:ignore="TextSizeCheck"
+                app:layout_constraintBottom_toTopOf="@+id/textView51"
+                app:layout_constraintStart_toEndOf="@+id/textHargaUmumPemesanan" />
+
+            <TextView
+                android:id="@+id/textView53"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Nama Tim"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textView36"
+                app:layout_constraintTop_toBottomOf="@+id/textView36" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputLayoutNamaTimPemesanan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView53"
+                app:layout_constraintTop_toBottomOf="@+id/textView53">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputTextNamaTimPemesanan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Masukkan Nama Tim"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

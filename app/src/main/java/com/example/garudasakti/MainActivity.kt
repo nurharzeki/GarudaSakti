@@ -77,7 +77,15 @@ class MainActivity : AppCompatActivity() {
                 // Tindakan ketika item diklik, misalnya menampilkan detail lapangan
                 val clickedLapangan = lapanganList[position]
                 // Lakukan sesuatu dengan clickedLapangan
-                // Misalnya, buka Activity detail lapangan atau tampilkan Toast
+                // Intent ke halaman detail lapangan
+                val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
+                intent.putExtra("lapanganName", clickedLapangan.nama)
+                intent.putExtra("lapanganJenis", clickedLapangan.jenis)
+                intent.putExtra("lapanganAlas", clickedLapangan.alas)
+                intent.putExtra("lapanganHarga", clickedLapangan.harga)
+                intent.putExtra("lapanganHargaMember", clickedLapangan.hargaMember)
+                startActivity(intent)
+
             }
         })
 
