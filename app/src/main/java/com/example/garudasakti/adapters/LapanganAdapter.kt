@@ -20,6 +20,8 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
 
     interface clickListener {
         fun onItemClick(position: Int)
+        fun onDetailClick(position: Int)
+        fun onPesanClick(position: Int)
     }
 
     fun setOnClickListener(listener: clickListener) {
@@ -34,6 +36,7 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         private val hargaMember: TextView = itemView.findViewById(R.id.textHargaMemberLapanganHome)
 
         val btnDetail: Button = itemView.findViewById(R.id.buttonDetailLapangan)
+        val btnPesan: Button = itemView.findViewById(R.id.buttonPesanLapangan)
 
         fun bind(data: LapanganHome){
             nama.text = data.nama
@@ -64,7 +67,12 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
 
         // Menambahkan click listener untuk tombol detail lapangan
         holder.btnDetail.setOnClickListener {
-            LapanganListener.onItemClick(position)
+            LapanganListener.onDetailClick(position)
+        }
+
+        // Menambahkan click listener untuk tombol detail lapangan
+        holder.btnPesan.setOnClickListener {
+            LapanganListener.onPesanClick(position)
         }
 
     }

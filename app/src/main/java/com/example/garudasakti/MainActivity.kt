@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 // Lakukan sesuatu dengan clickedLapangan
                 // Intent ke halaman detail lapangan
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
-                intent.putExtra("lapanganName", clickedLapangan.nama)
+                intent.putExtra("lapanganNama", clickedLapangan.nama)
                 intent.putExtra("lapanganJenis", clickedLapangan.jenis)
                 intent.putExtra("lapanganAlas", clickedLapangan.alas)
                 intent.putExtra("lapanganHarga", clickedLapangan.harga)
@@ -87,7 +87,37 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
 
             }
+
+            override fun onDetailClick(position: Int) {
+                val lapanganPesan = lapanganList[position]
+
+                // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
+                val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
+                intent.putExtra("lapanganNama", lapanganPesan.nama)
+                intent.putExtra("lapanganJenis", lapanganPesan.jenis)
+                intent.putExtra("lapanganAlas", lapanganPesan.alas)
+                intent.putExtra("lapanganHarga", lapanganPesan.harga)
+                intent.putExtra("lapanganHargaMember", lapanganPesan.hargaMember)
+                startActivity(intent)
+            }
+
+            override fun onPesanClick(position: Int) {
+                val lapanganPesan = lapanganList[position]
+                // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
+                val intent = Intent(this@MainActivity, PemesananActivity::class.java)
+                intent.putExtra("lapanganNama", lapanganPesan.nama)
+                intent.putExtra("lapanganJenis", lapanganPesan.jenis)
+                intent.putExtra("lapanganAlas", lapanganPesan.alas)
+                intent.putExtra("lapanganHarga", lapanganPesan.harga)
+                intent.putExtra("lapanganHargaMember", lapanganPesan.hargaMember)
+                startActivity(intent)
+            }
         })
+
+
+
+
+
 
     }
 }

@@ -298,7 +298,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Nama Tim"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="@+id/textView36"
                 app:layout_constraintTop_toBottomOf="@+id/textView36" />
 
@@ -322,6 +322,78 @@
                     android:hint="Masukkan Nama Tim"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- Tombol untuk memilih tanggal -->
+            <TextView
+                android:id="@+id/textViewPilihTanggalPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="10dp"
+                android:text="Pilih Tanggal"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:fontFamily="@font/ar_one_sans"
+                app:layout_constraintStart_toStartOf="@+id/inputLayoutNamaTimPemesanan"
+                app:layout_constraintTop_toBottomOf="@+id/inputLayoutNamaTimPemesanan" />
+
+            <Button
+                android:id="@+id/buttonPilihTanggalPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#1464BE"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Pilih Tanggal"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/textViewPilihTanggalPemesanan"
+                app:layout_constraintTop_toTopOf="@+id/textViewPilihTanggalPemesanan" />
+
+
+
+            <!-- Tombol untuk memilih jam -->
+            <TextView
+                android:id="@+id/textViewPilihJamPemesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/ar_one_sans"
+                android:padding="10dp"
+                android:text="Pilih Jam"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/textViewPilihTanggalPemesanan"
+                app:layout_constraintTop_toBottomOf="@+id/textViewPilihTanggalPemesanan" />
+
+            <Button
+                android:id="@+id/buttonPilihJamPemesanan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#1464BE"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Pilih Jam"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/buttonPilihTanggalPemesanan"
+                app:layout_constraintStart_toStartOf="@+id/buttonPilihTanggalPemesanan"
+                app:layout_constraintTop_toTopOf="@+id/textViewPilihJamPemesanan" />
+
+            <Button
+                android:id="@+id/buttonPembayaranPesanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:text="Pilih Pembayaran"
+                android:backgroundTint="#1464BE"
+                android:fontFamily="@font/ar_one_sans"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonPilihJamPemesanan" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
