@@ -39,10 +39,10 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         val btnPesan: Button = itemView.findViewById(R.id.buttonPesanLapangan)
 
         fun bind(data: LapanganHome){
-            nama.text = data.nama
-            jenis.text = data.jenis
-            harga.text = data.harga.toString()
-            hargaMember.text = data.hargaMember.toString()
+            nama.text = data.lapangan_name
+            jenis.text = data.jenis_name
+            harga.text = data.harga_umum.toString()
+            hargaMember.text = data.harga_member.toString()
         }
 
     }
