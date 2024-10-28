@@ -15,19 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="0dp"
-            android:layout_height="190dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/gambar_lapangan_badminton" />
-
         <TextView
             android:id="@+id/textNamaLapangan"
             android:layout_width="wrap_content"
@@ -36,8 +23,8 @@
             android:fontFamily="@font/ar_one_sans"
             android:text="Nama Lapangan"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/imageView7"
-            app:layout_constraintTop_toBottomOf="@+id/imageView7"
+            app:layout_constraintStart_toStartOf="@+id/imageView3"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
             tools:ignore="TextSizeCheck" />
 
         <TextView
@@ -68,7 +55,7 @@
             android:id="@+id/buttonPesanLapangan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:backgroundTint="#1464BE"
             android:fontFamily="@font/ar_one_sans"
             android:minWidth="0dp"
@@ -80,8 +67,8 @@
             android:text="Pesan"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/imageView7"
-            app:layout_constraintTop_toBottomOf="@+id/imageView7"
+            app:layout_constraintEnd_toEndOf="@+id/imageView3"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
             tools:ignore="TextSizeCheck,TouchTargetSizeCheck" />
 
         <Button
@@ -133,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="Harga Member :"
             android:textSize="12sp"
@@ -165,5 +152,18 @@
             app:layout_constraintBottom_toBottomOf="@+id/textHargaMemberLapanganHome"
             app:layout_constraintStart_toEndOf="@+id/textHargaMemberLapanganHome"
             tools:ignore="TextSizeCheck" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_height="180dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/gambar_lapangan_badminton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

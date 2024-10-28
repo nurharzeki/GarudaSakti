@@ -81,7 +81,8 @@
                         android:id="@+id/textUsernameProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Username" />
+                        android:text="Username"
+                        android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -103,7 +104,8 @@
                         android:id="@+id/textNamaProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nama Lengkap" />
+                        android:text="Nama Lengkap"
+                        android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -125,7 +127,8 @@
                         android:id="@+id/textEmailProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Email" />
+                        android:text="Email"
+                        android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button

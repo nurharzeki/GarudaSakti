@@ -2,14 +2,37 @@ package com.example.garudasakti
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.garudasakti.models.ProfilResponse
+import com.example.garudasakti.retro.MainInterface
+import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ProfilActivity : AppCompatActivity() {
+    private lateinit var apiInterface: MainInterface
+
+    private val token: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        apiInterface = retrofit.create(MainInterface::class.java)
+
+
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_profil)
@@ -18,6 +41,16 @@ class ProfilActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        fetchProfilData()
+
+
+        val buttonLogout = findViewById<Button>(R.id.buttonLogout)
+        buttonLogout.setOnClickListener {
+            logout()
+        }
+
+
 
         //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarProfile)
@@ -47,4 +80,56 @@ class ProfilActivity : AppCompatActivity() {
         }
 
     }
+
+
+
+
+
+    private fun fetchProfilData() {
+        apiInterface.getProfil("Bearer $token").enqueue(object : Callback<ProfilResponse> {
+            override fun onResponse(call: Call<ProfilResponse>, response: Response<ProfilResponse>) {
+                if (response.isSuccessful) {
+                    val profil = response.body()
+                    profil?.let {
+                        // Menampilkan data ke dalam view binding
+                        val textUsernameProfil = findViewById<EditText>(R.id.textUsernameProfil)
+                        textUsernameProfil.setText(it.username)
+                        val textNamaProfil = findViewById<EditText>(R.id.textNamaProfil)
+                        textNamaProfil.setText(it.name)
+                        val textEmailProfil = findViewById<EditText>(R.id.textEmailProfil)
+                        textEmailProfil.setText(it.email)
+                        // Anda bisa menampilkan saldo dan poin, jika ada tampilan untuk itu
+                    }
+//                    Toast.makeText(this@ProfilActivity, "berhasil mendapatkan data profil", Toast.LENGTH_SHORT).show()
+
+                } else {
+//                    Toast.makeText(this@ProfilActivity, "Gagal mendapatkan data profil", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ProfilResponse>, t: Throwable) {
+                Toast.makeText(this@ProfilActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Log.e("error", "Error : ${t.message}")
+            }
+        })
+    }
+
+
+    private fun logout() {
+        // Hapus token dari SharedPreferences
+        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("auth_token")  // Sesuaikan dengan key token yang Anda simpan
+        editor.apply()
+
+        // Navigasi ke LoginActivity dan clear activity stack
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()  // Menutup ProfilActivity
+    }
+
+
+
+
 }
