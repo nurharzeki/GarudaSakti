@@ -257,7 +257,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
-                android:backgroundTint="#1464BE"
+                android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="OK!"
                 android:textSize="14sp"

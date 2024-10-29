@@ -253,7 +253,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="#1464BE"
+                android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Pesan"
                 android:textSize="16sp"
