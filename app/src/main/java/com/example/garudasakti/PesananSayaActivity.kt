@@ -2,6 +2,8 @@ package com.example.garudasakti
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -12,12 +14,20 @@ import com.example.garudasakti.adapters.LapanganAdapter
 import com.example.garudasakti.adapters.PesananSayaAdapter
 import com.example.garudasakti.models.LapanganHome
 import com.example.garudasakti.models.PesananSaya
+import com.example.garudasakti.retro.MainInterface
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.garudasakti.retro.RetrofitConfig
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PesananSayaActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var pesananSayaAdapter: PesananSayaAdapter
     private lateinit var pesananSayaList: ArrayList<PesananSaya>
+    private val token: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,19 +66,22 @@ class PesananSayaActivity : AppCompatActivity() {
         }
 
         // Dummy data untuk pesanan saya
-        pesananSayaList = arrayListOf(
-            PesananSaya("Lapangan 1", "Tim Badminton Zeki", "10-10-2024", "09:00"),
-            PesananSaya("Lapangan 2", "Tim Badminton Harriko", "11-10-2024", "10:00"),
-            // Tambahkan pesanan lainnya sesuai kebutuhan
-        )
+//        pesananSayaList = arrayListOf(
+//            PesananSaya("Lapangan 1", "Tim Badminton Zeki", "10-10-2024", "09:00"),
+//            PesananSaya("Lapangan 2", "Tim Badminton Harriko", "11-10-2024", "10:00"),
+//            // Tambahkan pesanan lainnya sesuai kebutuhan
+//        )
 
         // Inisialisasi RecyclerView
         recyclerView = findViewById(R.id.rv_pesananSaya)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Inisialisasi adapter dan set adapter ke RecyclerView
+        pesananSayaList = ArrayList()
         pesananSayaAdapter = PesananSayaAdapter(pesananSayaList)
         recyclerView.adapter = pesananSayaAdapter
+
+        fetchPesananSaya()
 
         // Set listener untuk item klik
         pesananSayaAdapter.setOnClickListener(object : PesananSayaAdapter.clickListener {
@@ -81,4 +94,36 @@ class PesananSayaActivity : AppCompatActivity() {
         })
 
     }
+
+
+    private fun fetchPesananSaya() {
+        val token = token  // Ganti dengan token yang valid dari login
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+
+        val call = apiService.getPesananSaya("Bearer $token")
+        call.enqueue(object : Callback<List<PesananSaya>> {
+            override fun onResponse(call: Call<List<PesananSaya>>, response: Response<List<PesananSaya>>) {
+                if (response.isSuccessful) {
+                    // Berhasil mendapatkan respons dari API
+                    val pesananList = response.body()
+                    if (pesananList != null) {
+                        pesananSayaList.clear()
+                        pesananSayaList.addAll(pesananList)
+                        pesananSayaAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Toast.makeText(this@PesananSayaActivity, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<PesananSaya>>, t: Throwable) {
+                Log.e("PesananSayaActivity", "Error: ${t.message}")
+                Toast.makeText(this@PesananSayaActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+
 }

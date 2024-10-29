@@ -2,6 +2,7 @@ package com.example.garudasakti.retro
 
 import com.example.garudasakti.ApiModels.Authentication.LoginResponse
 import com.example.garudasakti.models.LapanganHome
+import com.example.garudasakti.models.PesananSaya
 import com.example.garudasakti.models.ProfilResponse
 import retrofit2.Call
 import retrofit2.http.*
@@ -23,6 +24,12 @@ interface MainInterface {
     fun getProfil(
         @Header("Authorization") token: String
     ): Call<ProfilResponse>
+
+
+    @GET("pesanan-saya")
+    fun getPesananSaya(
+        @Header("Authorization") token: String
+    ): Call<List<PesananSaya>>
 
 
 }
