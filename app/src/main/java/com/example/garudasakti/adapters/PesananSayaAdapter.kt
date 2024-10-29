@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.garudasakti.PesananSayaActivity
 import com.example.garudasakti.R
 import com.example.garudasakti.models.PesananSaya
 
@@ -26,22 +25,18 @@ class PesananSayaAdapter (private var data: ArrayList<PesananSaya>): RecyclerVie
         PesananSayaListener = listener
     }
 
-    class PesananSayaHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
-        //tambahkan inisialisasi view disini
-        private val lapanganHeader: TextView =itemView.findViewById(R.id.textNamaLapanganPesananSayaHeader)
+    class PesananSayaHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val lapangan: TextView = itemView.findViewById(R.id.textNamaLapanganPesananSaya)
-        private val tim: TextView = itemView.findViewById(R.id.textNamaTimPesananSaya)
+        private val customerName: TextView = itemView.findViewById(R.id.textNamaPemesanPesananSaya)
         private val tanggal: TextView = itemView.findViewById(R.id.textTanggalPesananSaya)
-        private val jam : TextView = itemView.findViewById(R.id.textJamPesananSaya)
+        private val jam: TextView = itemView.findViewById(R.id.textJamPesananSaya)
 
-        fun bind(data: PesananSaya){
-            lapanganHeader.text = data.lapangan
+        fun bind(data: PesananSaya) {
             lapangan.text = data.lapangan
-            tim.text = data.namaTim
+            customerName.text = data.customerName
             tanggal.text = data.tanggal
             jam.text = data.jam
         }
-
     }
 
     override fun onCreateViewHolder(

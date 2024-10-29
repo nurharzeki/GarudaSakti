@@ -82,11 +82,11 @@ class LoginActivity : AppCompatActivity() {
 
                         // Simpan token jika diperlukan, misal dengan SharedPreferences
 
-//                        Toast.makeText(
-//                            this@LoginActivity,
-//                            "Login successful! Welcome $userName",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Login berhasil! Welcome $userName",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()

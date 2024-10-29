@@ -12,7 +12,7 @@
         android:id="@+id/textLogoPendaftaran"
         android:layout_width="92dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,9 +37,9 @@
         android:id="@+id/cardViewPendaftaran"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="64dp"
         app:cardBackgroundColor="#DEF0F8FF"
         app:cardCornerRadius="32dp"
@@ -140,7 +140,7 @@
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/inputEmailLayoutPendaftaran"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
                 app:startIconDrawable="@drawable/ic_lock">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -177,7 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ar_one_sans"
-                    android:hint="Password"
+                    android:hint="Ketik ulang password"
                     android:inputType="textPassword"
                     android:paddingStart="44dp"
                     android:textSize="14sp"
@@ -197,6 +197,34 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/inputRetypePasswordLayoutPendaftaran" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:boxCornerRadiusBottomEnd="24dp"
+                app:boxCornerRadiusBottomStart="24dp"
+                app:boxCornerRadiusTopEnd="24dp"
+                app:boxCornerRadiusTopStart="24dp"
+                app:startIconDrawable="@drawable/ic_person"
+                app:endIconMode="clear_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/inputEmailLayoutPendaftaran">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editUsernamePendaftaran"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ar_one_sans"
+                    android:hint="Username"
+                    android:inputType="text"
+                    android:paddingStart="44dp"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

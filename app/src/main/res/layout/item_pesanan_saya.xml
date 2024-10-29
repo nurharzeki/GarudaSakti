@@ -36,7 +36,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/ar_one_sans"
-            android:text="Lapangan"
+            android:text="Pemesan"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/ar_one_sans"
-            android:text="Nama Tim"
+            android:text="Lapangan"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/textView2"
@@ -128,7 +128,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
         <TextView
-            android:id="@+id/textNamaLapanganPesananSaya"
+            android:id="@+id/textNamaPemesanPesananSaya"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -140,7 +140,7 @@
             app:layout_constraintTop_toTopOf="@+id/textView6" />
 
         <TextView
-            android:id="@+id/textNamaTimPesananSaya"
+            android:id="@+id/textNamaLapanganPesananSaya"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -150,7 +150,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/textView8"
-            app:layout_constraintTop_toBottomOf="@+id/textNamaLapanganPesananSaya" />
+            app:layout_constraintTop_toBottomOf="@+id/textNamaPemesanPesananSaya" />
 
         <TextView
             android:id="@+id/textTanggalPesananSaya"
@@ -163,7 +163,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/textView9"
-            app:layout_constraintTop_toBottomOf="@+id/textNamaTimPesananSaya" />
+            app:layout_constraintTop_toBottomOf="@+id/textNamaLapanganPesananSaya" />
 
         <TextView
             android:id="@+id/textJamPesananSaya"
