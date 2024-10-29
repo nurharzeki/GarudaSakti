@@ -188,7 +188,7 @@
                 android:id="@+id/buttonDaftarPendaftaran"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#1464BE"
+                android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Daftar"
                 android:textSize="16sp"

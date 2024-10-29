@@ -39,8 +39,13 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         val btnPesan: Button = itemView.findViewById(R.id.buttonPesanLapangan)
 
         fun bind(data: LapanganHome){
+            if (data.jenis_name == "Hybrid"){
+                jenis.text = "Badminton/Tenis"
+            } else {
+                jenis.text = data.jenis_name
+            }
             nama.text = data.lapangan_name
-            jenis.text = data.jenis_name
+
             harga.text = data.harga_umum.toString()
             hargaMember.text = data.harga_member.toString()
         }
