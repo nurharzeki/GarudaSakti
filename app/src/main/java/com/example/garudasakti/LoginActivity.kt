@@ -78,6 +78,7 @@ class LoginActivity : AppCompatActivity() {
                         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("auth_token", token)
+                        editor.putString("customer_name", userName)
                         editor.apply()
 
                         // Simpan token jika diperlukan, misal dengan SharedPreferences
@@ -88,6 +89,7 @@ class LoginActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        // intent.putExtra("customer_name", "$userName")
                         startActivity(intent)
                         finish()
                     }

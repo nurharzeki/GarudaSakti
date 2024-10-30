@@ -61,5 +61,8 @@ dependencies {
     // Logging Interceptor (Optional)
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
+    // Material Components
+    implementation("com.google.android.material:material:1.9.0")
+
 
 }

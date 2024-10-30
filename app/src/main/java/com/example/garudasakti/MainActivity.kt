@@ -1,7 +1,9 @@
 package com.example.garudasakti
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -26,16 +28,25 @@ class MainActivity : AppCompatActivity() {
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
     }
+    private val customer_name: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("customer_name", "") ?: ""
+    }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
 
 
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        val textCustomerName: TextView = findViewById(R.id.textNamaCustomerHome)
+
+        textCustomerName.text = customer_name
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
