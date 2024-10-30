@@ -8,7 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class RetrofitConfig {
-    private val BASE_URL = "http://10.0.2.2:8000/api/"
+    // http://192.168.76.3:8000/api/
+    // http://10.0.2.2:8000/api/
+    // http://127.0.0.1:8000/api/
+    // http://192.168.187.65:8000/api/
+    private val BASE_URL = "http://192.168.187.65:8000/api/"
     fun getRetrofitClientInstance():Retrofit{
 
         val logging = HttpLoggingInterceptor()
