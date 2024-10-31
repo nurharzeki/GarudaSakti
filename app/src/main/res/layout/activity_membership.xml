@@ -52,7 +52,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutMember"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -98,7 +99,7 @@
                 android:id="@+id/textView14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Nama"
@@ -106,32 +107,6 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView13"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
-                android:id="@+id/textView15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text="Username"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView14"
-                app:layout_constraintTop_toBottomOf="@+id/textView14"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
-                android:id="@+id/textView16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text="Email"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView15"
-                app:layout_constraintTop_toBottomOf="@+id/textView15"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -143,8 +118,8 @@
                 android:text="Saldo"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView16"
-                app:layout_constraintTop_toBottomOf="@+id/textView16"
+                app:layout_constraintStart_toStartOf="@+id/textView14"
+                app:layout_constraintTop_toBottomOf="@+id/textView14"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -161,42 +136,16 @@
                 tools:ignore="TextSizeCheck" />
 
             <TextView
-                android:id="@+id/textView20"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text=":"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/textView15"
-                app:layout_constraintTop_toTopOf="@+id/textView15"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
                 android:id="@+id/textView21"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginStart="64dp"
                 android:fontFamily="@font/ar_one_sans"
                 android:text=":"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/textView20"
-                app:layout_constraintStart_toStartOf="@+id/textView20"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
-                android:id="@+id/textView22"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text=":"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView20"
-                app:layout_constraintTop_toBottomOf="@+id/textView20"
+                app:layout_constraintStart_toEndOf="@+id/textView14"
+                app:layout_constraintTop_toTopOf="@+id/textView14"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -208,8 +157,8 @@
                 android:text=":"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
-                app:layout_constraintTop_toBottomOf="@+id/textView22"
+                app:layout_constraintStart_toStartOf="@+id/textView21"
+                app:layout_constraintTop_toBottomOf="@+id/textView21"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -229,39 +178,13 @@
                 android:id="@+id/textNamaMember"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Nama Member"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/textView21"
                 app:layout_constraintTop_toTopOf="@+id/textView21"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
-                android:id="@+id/textUsernameMember"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text="Username"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textNamaMember"
-                app:layout_constraintTop_toBottomOf="@+id/textNamaMember"
-                tools:ignore="TextSizeCheck" />
-
-            <TextView
-                android:id="@+id/textEmailMember"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ar_one_sans"
-                android:text="email@gmail.com"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textUsernameMember"
-                app:layout_constraintTop_toBottomOf="@+id/textUsernameMember"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -273,8 +196,8 @@
                 android:text="000"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textEmailMember"
-                app:layout_constraintTop_toBottomOf="@+id/textEmailMember"
+                app:layout_constraintStart_toStartOf="@+id/textNamaMember"
+                app:layout_constraintTop_toBottomOf="@+id/textNamaMember"
                 tools:ignore="TextSizeCheck" />
 
             <TextView
@@ -294,7 +217,7 @@
                 android:id="@+id/buttonKetentuanMembershipMember"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Ketentuan Membership"
@@ -308,7 +231,7 @@
                 android:id="@+id/buttonIsiSaldoMember"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Isi Saldo"

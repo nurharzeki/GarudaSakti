@@ -34,11 +34,11 @@ class PemesananActivity : AppCompatActivity() {
 
 
         // Terima data dari MainActivity
-        val lapanganNama = intent.getStringExtra("lapanganNama")
-        val lapanganJenis = intent.getStringExtra("lapanganJenis")
-        val lapanganAlas = intent.getStringExtra("lapanganAlas")
-        val lapanganHarga = intent.getIntExtra("lapanganHarga", 0)
-        val lapanganHargaMember = intent.getIntExtra("lapanganHargaMember", 0)
+        val lapanganNama = intent.getStringExtra("lapangan_name")
+        val lapanganJenis = intent.getStringExtra("jenis_name")
+        val lapanganAlas = intent.getStringExtra("alas_name")
+        val lapanganHarga = intent.getIntExtra("harga_umum", 0)
+        val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
 
         // Tampilkan data di UI
         val tvLapanganNamaHeader = findViewById<TextView>(R.id.textHeaderNamaLapanganPemesanan)

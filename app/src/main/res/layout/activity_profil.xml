@@ -36,10 +36,10 @@
             android:id="@+id/cardViewProfil"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             app:cardBackgroundColor="#DEF0F8FF"
             app:cardCornerRadius="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -54,9 +54,9 @@
 
                 <ImageView
                     android:id="@+id/profilLogoProfil"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -81,9 +81,9 @@
                         android:id="@+id/textUsernameProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Username"
                         android:focusable="false"
-                        android:focusableInTouchMode="false"/>
+                        android:focusableInTouchMode="false"
+                        android:text="Username" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -91,7 +91,7 @@
                     android:layout_width="0dp"
                     android:layout_height="64dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="16dp"
                     app:boxCornerRadiusBottomEnd="24dp"
                     app:boxCornerRadiusBottomStart="24dp"
@@ -105,9 +105,9 @@
                         android:id="@+id/textNamaProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nama Lengkap"
                         android:focusable="false"
-                        android:focusableInTouchMode="false"/>
+                        android:focusableInTouchMode="false"
+                        android:text="Nama Lengkap" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -115,7 +115,7 @@
                     android:layout_width="0dp"
                     android:layout_height="64dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="16dp"
                     app:boxCornerRadiusBottomEnd="24dp"
                     app:boxCornerRadiusBottomStart="24dp"
@@ -129,16 +129,16 @@
                         android:id="@+id/textEmailProfil"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Email"
                         android:focusable="false"
-                        android:focusableInTouchMode="false"/>
+                        android:focusableInTouchMode="false"
+                        android:text="Email" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
                     android:id="@+id/buttonEditProfil"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:backgroundTint="#3C87F0"
                     android:fontFamily="@font/ar_one_sans"
                     android:text="Edit Profil"
@@ -189,5 +189,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_bar"/>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_profil"
+        android:name="com.example.garudasakti.UpdateProfilFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayoutProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

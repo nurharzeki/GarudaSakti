@@ -29,11 +29,11 @@ class DetailLapanganActivity : AppCompatActivity() {
         }
 
         // Ambil data yang dikirim melalui Intent
-        val lapanganNama = intent.getStringExtra("lapanganNama")
-        val lapanganJenis = intent.getStringExtra("lapanganJenis")
-        val lapanganAlas = intent.getStringExtra("lapanganAlas")
-        val lapanganHarga = intent.getIntExtra("lapanganHarga", 0)
-        val lapanganHargaMember = intent.getIntExtra("lapanganHargaMember", 0)
+        val lapanganNama = intent.getStringExtra("lapangan_name")
+        val lapanganJenis = intent.getStringExtra("jenis_name")
+        val lapanganAlas = intent.getStringExtra("alas_name")
+        val lapanganHarga = intent.getIntExtra("harga_umum", 0)
+        val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
 
         // Set data ke tampilan detail
         findViewById<TextView>(R.id.textHeaderNamaLapanganDetailLapangan).text = lapanganNama
@@ -52,11 +52,11 @@ class DetailLapanganActivity : AppCompatActivity() {
 
         btnPesan.setOnClickListener{
             val intent = Intent(this, PemesananActivity::class.java)
-            intent.putExtra("lapanganNama", lapanganNama)
-            intent.putExtra("lapanganJenis", lapanganJenis)
-            intent.putExtra("lapanganAlas", lapanganAlas)
-            intent.putExtra("lapanganHarga", lapanganHarga)
-            intent.putExtra("lapanganHargaMember", lapanganHargaMember)
+            intent.putExtra("lapangan_name", lapanganNama)
+            intent.putExtra("jenis_name", lapanganJenis)
+            intent.putExtra("alas_name", lapanganAlas)
+            intent.putExtra("harga_umum", lapanganHarga)
+            intent.putExtra("harga_member", lapanganHargaMember)
             startActivity(intent)
         }
 

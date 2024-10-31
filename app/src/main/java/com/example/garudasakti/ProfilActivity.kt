@@ -3,6 +3,7 @@ package com.example.garudasakti
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -10,6 +11,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentContainerView
 import com.example.garudasakti.models.ProfilResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
@@ -43,6 +46,18 @@ class ProfilActivity : AppCompatActivity() {
         }
 
         fetchProfilData()
+
+        val buttonUpdateProfil = findViewById<Button>(R.id.buttonEditProfil)
+        buttonUpdateProfil.setOnClickListener {
+            val fragment = UpdateProfilFragment()
+            val fragmentContainer = findViewById<FragmentContainerView>(R.id.fragment_container_profil)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_profil, fragment)
+                .addToBackStack(null)
+                .commit()
+            fragmentContainer.visibility = View.VISIBLE
+
+        }
 
 
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
@@ -99,6 +114,14 @@ class ProfilActivity : AppCompatActivity() {
                         val textEmailProfil = findViewById<EditText>(R.id.textEmailProfil)
                         textEmailProfil.setText(it.email)
                         // Anda bisa menampilkan saldo dan poin, jika ada tampilan untuk itu
+
+                        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putString("customer_name", it.name)
+                        editor.putString("customer_username", it.username)
+                        editor.putString("customer_email", it.email)
+                        editor.apply()
+
                     }
 //                    Toast.makeText(this@ProfilActivity, "berhasil mendapatkan data profil", Toast.LENGTH_SHORT).show()
 
