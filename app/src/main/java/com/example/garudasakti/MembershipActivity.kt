@@ -3,18 +3,33 @@ package com.example.garudasakti
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.garudasakti.R.id.navBarMembership
+import com.example.garudasakti.models.MemberResponse
+import com.example.garudasakti.retro.MainInterface
+import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MembershipActivity : AppCompatActivity() {
+    private val token: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
+    }
+    private val customer_name: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("customer_name", "") ?: ""
+    }
+    private lateinit var apiInterface: MainInterface
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +40,9 @@ class MembershipActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        apiInterface = retrofit.create(MainInterface::class.java)
 
 
         // NAVBAR
@@ -57,65 +75,46 @@ class MembershipActivity : AppCompatActivity() {
 
 
         //LAYOUT MEMBER DAN NON MEMBER
-        // Ambil referensi ke elemen-elemen di layout
+
+        // Member
         val layoutMember = findViewById<ConstraintLayout>(R.id.layoutMember)
+
+        // Non Member
         val layoutNonMember = findViewById<ConstraintLayout>(R.id.layoutNonMember)
-        val textNamaMember = findViewById<TextView>(R.id.textNamaMember)
-        val textUsernameMember = findViewById<TextView>(R.id.textUsernameMember)
-        val textEmailMember = findViewById<TextView>(R.id.textEmailMember)
-        val textSaldoMember = findViewById<TextView>(R.id.textSaldoMember)
-        val textPoinMember = findViewById<TextView>(R.id.textPoinMember)
-        val buttonIsiSaldoMember = findViewById<Button>(R.id.buttonIsiSaldoMember)
-        val buttonDaftarMember = findViewById<Button>(R.id.buttonDaftarMember)
-        val buttonKetentuanMembershipMember = findViewById<Button>(R.id.buttonKetentuanMembershipMember)
-        val buttonKetentuanMembershipNonMember = findViewById<Button>(R.id.buttonKetentuanMembershipNonMember)
 
-        // Data dummy untuk simulasi
-        val isMember = true // Ubah ini ke false jika ingin menguji kondisi non-member
-        val namaMember = "Harriko Nur Harzeki"
-        val usernameMember = "nurharzeki"
-        val emailMember = "nurharzeki@gmail.com"
-        val saldoMember = 150000 // Dummy saldo member
-        val poinMember = 150 // Dummy poin member
-
-        // Logika berdasarkan status member (data dummy)
-        if (isMember) {
-            // Jika pengguna adalah member
-            layoutMember.visibility = LinearLayout.VISIBLE
-            layoutNonMember.visibility = LinearLayout.GONE
-
-            // Tampilkan saldo dan poin dummy
-            textNamaMember.text = namaMember
-            textUsernameMember.text = usernameMember
-            textEmailMember.text = emailMember
-            textSaldoMember.text = saldoMember.toString()
-            textPoinMember.text = poinMember.toString()
-
-            buttonKetentuanMembershipMember.setOnClickListener {
-                // logika saat member mengklik button ketentuan membership
-
-            }
-
-            buttonIsiSaldoMember.setOnClickListener {
-                // logika saat member mengklik button isi saldo
-
-            }
-
-        } else {
-            // Jika pengguna bukan member
-            layoutMember.visibility = LinearLayout.GONE
-            layoutNonMember.visibility = LinearLayout.VISIBLE
-
-            // Set aksi untuk tombol daftar
-            buttonDaftarMember.setOnClickListener {
-                // Logika untuk mendaftar sebagai member
-
-            }
-            buttonKetentuanMembershipNonMember.setOnClickListener {
-                // Logika saat pelanggan non member mengklik button ketentuan membership
-
-            }
-        }
+        fetchMemberData(layoutMember, layoutNonMember)
 
     }
+
+
+    private fun fetchMemberData(layoutMember: ConstraintLayout, layoutNonMember: ConstraintLayout) {
+        apiInterface.getMemberData("Bearer $token").enqueue(object : Callback<MemberResponse> {
+            override fun onResponse(call: Call<MemberResponse>, response: Response<MemberResponse>) {
+                if (response.isSuccessful && response.body() != null ) {
+                    if (response.body()?.membership_status == 1){
+                        val member = response.body()!!.data
+                        if (member != null) {
+                            findViewById<TextView>(R.id.textNamaMember).text = member.customer_name
+                            findViewById<TextView>(R.id.textSaldoMember).text = member.saldo.toString()
+                            findViewById<TextView>(R.id.textPoinMember).text = member.poin.toString()
+                        }
+                        layoutMember.visibility = View.VISIBLE
+                        layoutNonMember.visibility = View.GONE
+                    } else {
+                        layoutMember.visibility = View.GONE
+                        layoutNonMember.visibility = View.VISIBLE
+                    }
+
+                } else {
+                    Toast.makeText(this@MembershipActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<MemberResponse>, t: Throwable) {
+                Toast.makeText(this@MembershipActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
 }

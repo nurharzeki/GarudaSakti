@@ -38,15 +38,15 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="64dp"
         app:cardBackgroundColor="#DEF0F8FF"
         app:cardCornerRadius="32dp"
         app:layout_constraintBottom_toTopOf="@+id/textLogoPendaftaranBerhasil"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textHeaderPendaftaranBerhasil" >
+        app:layout_constraintTop_toBottomOf="@+id/textHeaderPendaftaranBerhasil">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constrainLayoutCardPendaftaranBerhasil"
@@ -57,7 +57,7 @@
                 android:id="@+id/checkLogoPendaftaranBerhasil"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -95,15 +95,41 @@
                 android:id="@+id/buttonToHomePendaftaranBerhasil"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:backgroundTint="#3C87F0"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Ke Halaman Utama"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textCustomerNamePendaftaranBerhasil" />
+
+            <TextView
+                android:id="@+id/textView62"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Selamat bergabung sebagai pelanggan\nGaruda Sakti Sport Hall,"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@+id/textViewPendaftaranBerhasilPendaftaranBerhasil"
+                app:layout_constraintStart_toStartOf="@+id/textViewPendaftaranBerhasilPendaftaranBerhasil"
                 app:layout_constraintTop_toBottomOf="@+id/textViewPendaftaranBerhasilPendaftaranBerhasil" />
+
+            <TextView
+                android:id="@+id/textCustomerNamePendaftaranBerhasil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Nama Customer"
+                android:textSize="18sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="@+id/textView62"
+                app:layout_constraintStart_toStartOf="@+id/textView62"
+                app:layout_constraintTop_toBottomOf="@+id/textView62" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

@@ -26,12 +26,14 @@ class PesananSayaAdapter (private var data: ArrayList<PesananSaya>): RecyclerVie
     }
 
     class PesananSayaHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val headLapangan: TextView = itemView.findViewById(R.id.textNamaLapanganPesananSayaHeader)
         private val lapangan: TextView = itemView.findViewById(R.id.textNamaLapanganPesananSaya)
         private val customerName: TextView = itemView.findViewById(R.id.textNamaPemesanPesananSaya)
         private val tanggal: TextView = itemView.findViewById(R.id.textTanggalPesananSaya)
         private val jam: TextView = itemView.findViewById(R.id.textJamPesananSaya)
 
         fun bind(data: PesananSaya) {
+            headLapangan.text = data.lapangan
             lapangan.text = data.lapangan
             customerName.text = data.customerName
             tanggal.text = data.tanggal

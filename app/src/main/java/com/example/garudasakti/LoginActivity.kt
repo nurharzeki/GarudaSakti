@@ -22,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
+    private lateinit var daftarButton: Button
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,14 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        daftarButton = findViewById(R.id.buttonDaftarLogin)
+
+        daftarButton.setOnClickListener {
+            val intent = Intent(this, PendaftaranActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
 

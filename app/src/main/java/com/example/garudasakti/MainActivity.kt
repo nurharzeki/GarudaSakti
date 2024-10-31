@@ -23,7 +23,7 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var lapanganAdapter: LapanganAdapter
-    private lateinit var lapanganList: ArrayList<LapanganHome>
+    private var lapanganList = ArrayList<LapanganHome>()
     private lateinit var apiInterface: MainInterface
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
@@ -38,7 +38,11 @@ class MainActivity : AppCompatActivity() {
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
 
-
+        if(token == null){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -81,15 +85,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Dummy data untuk lapangan
-//        lapanganList = arrayListOf(
-//            LapanganHome("Lapangan 1", "Badminton", "Karpet", 50000, 47000),
-//            LapanganHome("Lapangan 2", "Hybrid", "Beton", 35000, 32000),
-//            LapanganHome("Lapangan 3", "Badminton", "Karpet", 50000, 47000),
-//            LapanganHome("Lapangan 4", "Hybrid", "Beton", 35000, 32000),
-//            // Tambahkan lapangan lainnya sesuai kebutuhan
-//        )
-
         // Inisialisasi RecyclerView
         recyclerView = findViewById(R.id.rv_lapangan)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -105,8 +100,6 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClick(position: Int) {
                 // Tindakan ketika item diklik, misalnya menampilkan detail lapangan
                 val clickedLapangan = lapanganList[position]
-                // Lakukan sesuatu dengan clickedLapangan
-                // Intent ke halaman detail lapangan
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
                 intent.putExtra("lapangan_name", clickedLapangan.lapangan_name)
                 intent.putExtra("jenis_name", clickedLapangan.jenis_name)
@@ -160,7 +153,8 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     // Dapatkan data dan perbarui RecyclerView
                     val lapanganData = response.body() ?: emptyList()
-                    lapanganAdapter.setListLapangan(ArrayList(lapanganData))
+                    lapanganList = ArrayList(lapanganData)
+                    lapanganAdapter.setListLapangan(lapanganList)
                 } else {
                     // Tangani respons tidak berhasil
                     Toast.makeText(this@MainActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
