@@ -59,6 +59,17 @@ class ProfilActivity : AppCompatActivity() {
 
         }
 
+        val buttonUpdatePassword = findViewById<Button>(R.id.buttonGantiPassword)
+        buttonUpdatePassword.setOnClickListener {
+            val fragment = UpdatePasswordFragment()
+            val fragmentContainer = findViewById<FragmentContainerView>(R.id.fragment_container_profil)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_profil, fragment)
+                .addToBackStack(null)
+                .commit()
+            fragmentContainer.visibility = View.VISIBLE
+        }
+
 
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
         buttonLogout.setOnClickListener {

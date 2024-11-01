@@ -37,7 +37,7 @@ class SplashscreenActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-        }, 500) // 1000 ms = 1 detik
+        }, 800) // 1000 ms = 1 detik
 
 
 
