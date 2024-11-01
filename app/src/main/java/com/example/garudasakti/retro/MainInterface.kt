@@ -7,6 +7,7 @@ import com.example.garudasakti.models.PesananSaya
 import com.example.garudasakti.models.ProfilResponse
 import com.example.garudasakti.models.RegisterRequest
 import com.example.garudasakti.models.RegisterResponse
+import com.example.garudasakti.models.UpdatePasswordResponse
 import com.example.garudasakti.models.UpdateProfilResponse
 import retrofit2.Call
 import retrofit2.http.*
@@ -51,5 +52,11 @@ interface MainInterface {
         @Body profilData: Map<String, String>
     ): Call<UpdateProfilResponse>
 
+    @FormUrlEncoded
+    @PATCH("update-password")
+    fun updatePassword(
+        @Header("Authorization") token: String,
+        @FieldMap passwordData: Map<String, String>
+    ): Call<UpdatePasswordResponse>
 
 }

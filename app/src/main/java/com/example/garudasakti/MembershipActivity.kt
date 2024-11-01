@@ -73,6 +73,20 @@ class MembershipActivity : AppCompatActivity() {
             }
         }
 
+        val buttonKetentuanMembershipMember = findViewById<Button>(R.id.buttonKetentuanMembershipMember)
+        val buttonKetentuanMembershipNonMember = findViewById<Button>(R.id.buttonKetentuanMembershipNonMember)
+
+        buttonKetentuanMembershipNonMember.setOnClickListener {
+            val intent = Intent(this, KetentuanMembershipActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        buttonKetentuanMembershipMember.setOnClickListener {
+            val intent = Intent(this, KetentuanMembershipActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         //LAYOUT MEMBER DAN NON MEMBER
 
