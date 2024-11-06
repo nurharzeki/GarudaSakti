@@ -29,6 +29,7 @@ class DetailLapanganActivity : AppCompatActivity() {
         }
 
         // Ambil data yang dikirim melalui Intent
+        val lapangan_id = intent.getIntExtra("lapangan_id", 0)
         val lapanganNama = intent.getStringExtra("lapangan_name")
         val lapanganJenis = intent.getStringExtra("jenis_name")
         val lapanganAlas = intent.getStringExtra("alas_name")
@@ -52,6 +53,7 @@ class DetailLapanganActivity : AppCompatActivity() {
 
         btnPesan.setOnClickListener{
             val intent = Intent(this, PemesananActivity::class.java)
+            intent.putExtra("lapangan_id", lapangan_id)
             intent.putExtra("lapangan_name", lapanganNama)
             intent.putExtra("jenis_name", lapanganJenis)
             intent.putExtra("alas_name", lapanganAlas)

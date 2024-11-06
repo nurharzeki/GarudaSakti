@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 // Tindakan ketika item diklik, misalnya menampilkan detail lapangan
                 val clickedLapangan = lapanganList[position]
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
+                intent.putExtra("lapangan_id", clickedLapangan.id)
                 intent.putExtra("lapangan_name", clickedLapangan.lapangan_name)
                 intent.putExtra("jenis_name", clickedLapangan.jenis_name)
                 intent.putExtra("alas_name", clickedLapangan.alas_name)
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
+                intent.putExtra("lapangan_id", lapanganPesan.id)
                 intent.putExtra("lapangan_name", lapanganPesan.lapangan_name)
                 intent.putExtra("jenis_name", lapanganPesan.jenis_name)
                 intent.putExtra("alas_name", lapanganPesan.alas_name)
@@ -127,6 +129,7 @@ class MainActivity : AppCompatActivity() {
                 val lapanganPesan = lapanganList[position]
                 // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
                 val intent = Intent(this@MainActivity, PemesananActivity::class.java)
+                intent.putExtra("lapangan_id", lapanganPesan.id)
                 intent.putExtra("lapangan_name", lapanganPesan.lapangan_name)
                 intent.putExtra("jenis_name", lapanganPesan.jenis_name)
                 intent.putExtra("alas_name", lapanganPesan.alas_name)

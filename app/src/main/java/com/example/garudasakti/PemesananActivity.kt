@@ -5,18 +5,26 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.garudasakti.models.TanggalResponse
+import com.example.garudasakti.retro.MainInterface
+import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import retrofit2.*
 import org.w3c.dom.Text
 import java.util.Calendar
 
 class PemesananActivity : AppCompatActivity() {
 
+    private val token: String by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
+    }
 
     private lateinit var tvSelectedDate: TextView
     private lateinit var tvSelectedTime: TextView
@@ -24,6 +32,11 @@ class PemesananActivity : AppCompatActivity() {
     private lateinit var btnPickTime: Button
     private lateinit var btnPembayaran: Button
 
+    private lateinit var tanggalTersedia: List<String>
+
+    private lateinit var jamTersedia: List<String>
+
+    private lateinit var tanggaldipilih: String
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,14 +44,34 @@ class PemesananActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_pemesanan)
 
-
-
         // Terima data dari MainActivity
+        val lapangan_id = intent.getIntExtra("lapangan_id", 0)
         val lapanganNama = intent.getStringExtra("lapangan_name")
         val lapanganJenis = intent.getStringExtra("jenis_name")
         val lapanganAlas = intent.getStringExtra("alas_name")
         val lapanganHarga = intent.getIntExtra("harga_umum", 0)
         val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
+
+        val token = token  // Ganti dengan token yang valid dari login
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+
+        tanggalTersedia = listOf()
+        jamTersedia = listOf()
+
+        val call = apiService.getTanggal("Bearer $token", lapangan_id)
+        call.enqueue(object : Callback<List<TanggalResponse>> {
+            override fun onResponse(call: Call<List<TanggalResponse>>, response: Response<List<TanggalResponse>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    tanggalTersedia = response.body()!!.map { it.tanggal }
+                } else {
+                    Log.e("API Error", "Response failed: ${response.errorBody()}")
+                }
+            }
+            override fun onFailure(call: Call<List<TanggalResponse>>, t: Throwable) {
+                Log.e("API Error", "Failed to fetch tanggal: ${t.message}")
+            }
+        })
 
         // Tampilkan data di UI
         val tvLapanganNamaHeader = findViewById<TextView>(R.id.textHeaderNamaLapanganPemesanan)
@@ -55,16 +88,11 @@ class PemesananActivity : AppCompatActivity() {
         tvLapanganHarga.text = "Rp$lapanganHarga"
         tvLapanganHargaMember.text = "Rp$lapanganHargaMember"
 
-
-
         // Inisialisasi View
         tvSelectedDate = findViewById(R.id.textViewPilihTanggalPemesanan)
         tvSelectedTime = findViewById(R.id.textViewPilihJamPemesanan)
         btnPickDate = findViewById(R.id.buttonPilihTanggalPemesanan)
         btnPickTime = findViewById(R.id.buttonPilihJamPemesanan)
-
-
-
 
         // Data dummy untuk tanggal yang tersedia
         val dummyTanggalTersedia = listOf(
@@ -80,36 +108,32 @@ class PemesananActivity : AppCompatActivity() {
             "2024-10-20" to listOf("15:00", "16:00", "17:00")
         )
 
-
         // Event listener untuk tombol pilih tanggal
         btnPickDate.setOnClickListener {
             // Buat Array untuk menyimpan daftar tanggal yang tersedia
-            val tanggalArray = dummyTanggalTersedia.toTypedArray()
+            val tanggalArray = tanggalTersedia.toTypedArray()
 
             // Buat AlertDialog untuk menampilkan pilihan tanggal
             val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Pilih Tanggal")
             builder.setItems(tanggalArray) { dialog, which ->
                 // Set tanggal yang dipilih ke TextView
-                tvSelectedDate.text = tanggalArray[which]
+                val selectedDate = tanggalArray[which]
+                tvSelectedDate.text = selectedDate
+                tanggaldipilih = selectedDate
             }
             builder.show()
         }
 
-
-
         // Event listener untuk tombol pilih jam
         btnPickTime.setOnClickListener {
             // Cek apakah pengguna sudah memilih tanggal
-            val selectedDate = tvSelectedDate.text.toString()
+            val selectedDate = tanggaldipilih
 
             if (selectedDate.isEmpty()) {
                 // Tampilkan pesan jika belum memilih tanggal
                 android.widget.Toast.makeText(this, "Pilih tanggal terlebih dahulu!", android.widget.Toast.LENGTH_SHORT).show()
             } else {
-                // Ambil daftar jam yang tersedia untuk tanggal yang dipilih
-                val jamTersedia = dummyJamTersedia[selectedDate] ?: listOf()
-
                 if (jamTersedia.isNotEmpty()) {
                     // Buat Array untuk menyimpan daftar jam
                     val jamArray = jamTersedia.toTypedArray()
@@ -129,7 +153,6 @@ class PemesananActivity : AppCompatActivity() {
             }
         }
 
-
         btnPembayaran = findViewById(R.id.buttonPembayaranPesanan)
 
         btnPembayaran.setOnClickListener {
@@ -140,21 +163,11 @@ class PemesananActivity : AppCompatActivity() {
         }
 
 
-
-
-
-
-
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-
-
-
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarPemesanan)
         bottomNavigationView.selectedItemId = R.id.menuHome
@@ -182,11 +195,6 @@ class PemesananActivity : AppCompatActivity() {
             }
         }
 
-
-
-
-
-
-
     }
+
 }

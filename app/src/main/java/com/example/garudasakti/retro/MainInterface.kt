@@ -1,14 +1,17 @@
 package com.example.garudasakti.retro
 
 import com.example.garudasakti.ApiModels.Authentication.LoginResponse
+import com.example.garudasakti.models.KetentuanMembershipResponse
 import com.example.garudasakti.models.LapanganHome
 import com.example.garudasakti.models.MemberResponse
 import com.example.garudasakti.models.PesananSaya
 import com.example.garudasakti.models.ProfilResponse
 import com.example.garudasakti.models.RegisterRequest
 import com.example.garudasakti.models.RegisterResponse
+import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.models.UpdatePasswordResponse
 import com.example.garudasakti.models.UpdateProfilResponse
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -58,5 +61,18 @@ interface MainInterface {
         @Header("Authorization") token: String,
         @FieldMap passwordData: Map<String, String>
     ): Call<UpdatePasswordResponse>
+
+    @GET("ketentuan-membership")
+    fun getKetentuanMembership(
+        @Header("Authorization") token: String
+    ): Call<List<KetentuanMembershipResponse>>
+
+    @FormUrlEncoded
+    @POST("tanggal-tersedia")
+    fun getTanggal(
+        @Header("Authorization") token: String,
+        @Field("lapangan_id") lapangan_id: Int
+    ): Call<List<TanggalResponse>>
+
 
 }
