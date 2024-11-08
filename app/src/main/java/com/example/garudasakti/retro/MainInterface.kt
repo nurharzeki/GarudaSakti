@@ -24,6 +24,11 @@ interface MainInterface {
         @Field("password") password: String
     ): Call<LoginResponse>
 
+    @GET("logout")
+    fun logout(
+        @Header("Authorization") token: String
+    ): Call<Void>
+
     @GET("home")
     fun getLapanganList(
         @Header("Authorization") token: String
