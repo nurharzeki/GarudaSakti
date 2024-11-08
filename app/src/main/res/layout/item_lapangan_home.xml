@@ -22,7 +22,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="Nama Lapangan"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@+id/imageView3"
             app:layout_constraintTop_toBottomOf="@+id/imageView3"
             tools:ignore="TextSizeCheck" />
@@ -34,7 +34,7 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="Harga Umum :"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@+id/textJenisLapangan"
             app:layout_constraintTop_toBottomOf="@+id/textJenisLapangan"
             tools:ignore="TextSizeCheck" />
@@ -43,10 +43,10 @@
             android:id="@+id/textHargaUmumLapanganHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="000"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="@+id/labelHarga"
             app:layout_constraintStart_toEndOf="@+id/labelHarga"
             tools:ignore="TextSizeCheck" />
@@ -98,7 +98,7 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="Jenis Lapangan"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@+id/textNamaLapangan"
             app:layout_constraintTop_toBottomOf="@+id/textNamaLapangan"
             tools:ignore="TextSizeCheck" />
@@ -110,7 +110,7 @@
             android:layout_marginStart="8dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="/Jam"
-            android:textSize="11sp"
+            android:textSize="10sp"
             app:layout_constraintStart_toEndOf="@+id/textHargaUmumLapanganHome"
             app:layout_constraintTop_toTopOf="@+id/textHargaUmumLapanganHome"
             tools:ignore="TextSizeCheck" />
@@ -120,11 +120,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="8dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="Harga Member :"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@+id/labelHarga"
             app:layout_constraintTop_toBottomOf="@+id/labelHarga"
             tools:ignore="TextSizeCheck" />
@@ -133,10 +131,10 @@
             android:id="@+id/textHargaMemberLapanganHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="000"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView"
             app:layout_constraintStart_toEndOf="@+id/textView"
             tools:ignore="TextSizeCheck" />
@@ -148,7 +146,7 @@
             android:layout_marginStart="8dp"
             android:fontFamily="@font/ar_one_sans"
             android:text="/Jam"
-            android:textSize="11sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/textHargaMemberLapanganHome"
             app:layout_constraintStart_toEndOf="@+id/textHargaMemberLapanganHome"
             tools:ignore="TextSizeCheck" />
@@ -156,7 +154,7 @@
         <ImageView
             android:id="@+id/imageView3"
             android:layout_width="0dp"
-            android:layout_height="130dp"
+            android:layout_height="120dp"
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
@@ -165,5 +163,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/gambar_lapangan_badminton" />
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="6dp"
+            android:fontFamily="@font/ar_one_sans"
+            android:text="Harga Poin :"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textHargaPoinLapanganHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/ar_one_sans"
+            android:text="00"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView16"
+            app:layout_constraintStart_toEndOf="@+id/textView16" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

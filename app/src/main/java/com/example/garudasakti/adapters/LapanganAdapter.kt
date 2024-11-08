@@ -34,6 +34,7 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
         private val jenis: TextView = itemView.findViewById(R.id.textJenisLapangan)
         private val harga: TextView = itemView.findViewById(R.id.textHargaUmumLapanganHome)
         private val hargaMember: TextView = itemView.findViewById(R.id.textHargaMemberLapanganHome)
+        private val hargaPoin: TextView = itemView.findViewById(R.id.textHargaPoinLapanganHome)
 
         val btnDetail: Button = itemView.findViewById(R.id.buttonDetailLapangan)
         val btnPesan: Button = itemView.findViewById(R.id.buttonPesanLapangan)
@@ -48,6 +49,7 @@ class LapanganAdapter (private var data: ArrayList<LapanganHome>): RecyclerView.
 
             harga.text = data.harga_umum.toString()
             hargaMember.text = data.harga_member.toString()
+            hargaPoin.text = data.harga_poin.toString()
         }
 
     }

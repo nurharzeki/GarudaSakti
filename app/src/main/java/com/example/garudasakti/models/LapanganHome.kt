@@ -6,5 +6,6 @@ data class LapanganHome (
     val jenis_name: String,
     val alas_name: String,
     val harga_umum: Int,
-    val harga_member: Int
+    val harga_member: Int,
+    val harga_poin: Int
 )

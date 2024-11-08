@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarHome)
         bottomNavigationView.selectedItemId = R.id.menuHome
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -85,20 +84,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Inisialisasi RecyclerView
         recyclerView = findViewById(R.id.rv_lapangan)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Inisialisasi adapter dan set adapter ke RecyclerView
         lapanganAdapter = LapanganAdapter(arrayListOf())
         recyclerView.adapter = lapanganAdapter
 
         fetchLapanganList()
 
-        // Set listener untuk item klik
         lapanganAdapter.setOnClickListener(object : LapanganAdapter.clickListener {
             override fun onItemClick(position: Int) {
-                // Tindakan ketika item diklik, misalnya menampilkan detail lapangan
                 val clickedLapangan = lapanganList[position]
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
                 intent.putExtra("lapangan_id", clickedLapangan.id)
@@ -107,14 +102,12 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("alas_name", clickedLapangan.alas_name)
                 intent.putExtra("harga_umum", clickedLapangan.harga_umum)
                 intent.putExtra("harga_member", clickedLapangan.harga_member)
+                intent.putExtra("harga_poin", clickedLapangan.harga_poin)
                 startActivity(intent)
-
             }
 
             override fun onDetailClick(position: Int) {
                 val lapanganPesan = lapanganList[position]
-
-                // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
                 val intent = Intent(this@MainActivity, DetailLapanganActivity::class.java)
                 intent.putExtra("lapangan_id", lapanganPesan.id)
                 intent.putExtra("lapangan_name", lapanganPesan.lapangan_name)
@@ -122,12 +115,12 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("alas_name", lapanganPesan.alas_name)
                 intent.putExtra("harga_umum", lapanganPesan.harga_umum)
                 intent.putExtra("harga_member", lapanganPesan.harga_member)
+                intent.putExtra("harga_poin", lapanganPesan.harga_poin)
                 startActivity(intent)
             }
 
             override fun onPesanClick(position: Int) {
                 val lapanganPesan = lapanganList[position]
-                // Pindah ke activity pemesanan lapangan dengan membawa data lapangan yang dipilih
                 val intent = Intent(this@MainActivity, PemesananActivity::class.java)
                 intent.putExtra("lapangan_id", lapanganPesan.id)
                 intent.putExtra("lapangan_name", lapanganPesan.lapangan_name)
@@ -135,18 +128,13 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("alas_name", lapanganPesan.alas_name)
                 intent.putExtra("harga_umum", lapanganPesan.harga_umum)
                 intent.putExtra("harga_member", lapanganPesan.harga_member)
+                intent.putExtra("harga_poin", lapanganPesan.harga_poin)
                 startActivity(intent)
             }
         })
-
-
-
-
     }
 
-
     private fun fetchLapanganList() {
-        // Panggil API dan tangani respons
         val call = apiInterface.getLapanganList("Bearer $token")
         call.enqueue(object : Callback<List<LapanganHome>> {
             override fun onResponse(
@@ -154,21 +142,17 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<LapanganHome>>
             ) {
                 if (response.isSuccessful) {
-                    // Dapatkan data dan perbarui RecyclerView
                     val lapanganData = response.body() ?: emptyList()
                     lapanganList = ArrayList(lapanganData)
                     lapanganAdapter.setListLapangan(lapanganList)
                 } else {
-                    // Tangani respons tidak berhasil
                     Toast.makeText(this@MainActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<LapanganHome>>, t: Throwable) {
-                // Tangani kegagalan koneksi
                 Toast.makeText(this@MainActivity, "Koneksi error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
-
 }
