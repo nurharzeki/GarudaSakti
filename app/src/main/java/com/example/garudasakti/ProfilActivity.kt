@@ -1,5 +1,6 @@
 package com.example.garudasakti
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -30,11 +31,8 @@ class ProfilActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
-
-
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -70,15 +68,23 @@ class ProfilActivity : AppCompatActivity() {
             fragmentContainer.visibility = View.VISIBLE
         }
 
-
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
         buttonLogout.setOnClickListener {
-            logout()
+            AlertDialog.Builder(this).apply {
+                setTitle("Konfirmasi Logout")
+                setMessage("Apakah Anda yakin ingin logout?")
+                setPositiveButton("Logout") { dialog, _ ->
+                    logout()
+                    dialog.dismiss()
+                }
+                setNegativeButton("Batal") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                create()
+                show()
+            }
         }
 
-
-
-        //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarProfile)
         bottomNavigationView.selectedItemId = R.id.menuProfil
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -107,10 +113,6 @@ class ProfilActivity : AppCompatActivity() {
 
     }
 
-
-
-
-
     private fun fetchProfilData() {
         apiInterface.getProfil("Bearer $token").enqueue(object : Callback<ProfilResponse> {
             override fun onResponse(call: Call<ProfilResponse>, response: Response<ProfilResponse>) {
@@ -124,7 +126,6 @@ class ProfilActivity : AppCompatActivity() {
                         textNamaProfil.setText(it.name)
                         val textEmailProfil = findViewById<EditText>(R.id.textEmailProfil)
                         textEmailProfil.setText(it.email)
-                        // Anda bisa menampilkan saldo dan poin, jika ada tampilan untuk itu
 
                         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
@@ -148,19 +149,32 @@ class ProfilActivity : AppCompatActivity() {
         })
     }
 
-
     private fun logout() {
-        // Hapus token dari SharedPreferences
-        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.remove("auth_token")  // Sesuaikan dengan key token yang Anda simpan
-        editor.apply()
+        apiInterface.logout("Bearer $token").enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
 
-        // Navigasi ke LoginActivity dan clear activity stack
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()  // Menutup ProfilActivity
+                    Toast.makeText(this@ProfilActivity, "Berhasil Logout", Toast.LENGTH_SHORT).show()
+
+                    val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.remove("auth_token")
+                    editor.apply()
+
+                    val intent = Intent(this@ProfilActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+
+                } else {
+                    // Tangani kasus gagal logout jika perlu
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Tangani kegagalan jaringan atau error lainnya
+            }
+        })
     }
 
 
