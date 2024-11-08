@@ -12,10 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PembayaranActivity : AppCompatActivity() {
 
-
     private lateinit var btnTemp: Button
-
-
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +32,6 @@ class PembayaranActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
-
-
-        //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarPembayaran)
         bottomNavigationView.selectedItemId = R.id.menuHome
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -65,10 +57,5 @@ class PembayaranActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-
-
-
-
     }
 }

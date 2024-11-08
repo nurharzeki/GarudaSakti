@@ -1,6 +1,7 @@
 package com.example.garudasakti.retro
 
 import com.example.garudasakti.ApiModels.Authentication.LoginResponse
+import com.example.garudasakti.models.JamResponse
 import com.example.garudasakti.models.KetentuanMembershipResponse
 import com.example.garudasakti.models.LapanganHome
 import com.example.garudasakti.models.MemberResponse
@@ -73,6 +74,14 @@ interface MainInterface {
         @Header("Authorization") token: String,
         @Field("lapangan_id") lapangan_id: Int
     ): Call<List<TanggalResponse>>
+
+    @FormUrlEncoded
+    @POST("jam-tersedia")
+    fun getJam(
+        @Header("Authorization") token: String,
+        @Field("lapangan_id") lapangan_id: Int,
+        @Field("tanggal") tanggal: String
+    ): Call<List<JamResponse>>
 
 
 }

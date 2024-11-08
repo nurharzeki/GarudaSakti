@@ -16,8 +16,7 @@ class DetailLapanganActivity : AppCompatActivity() {
 
     private lateinit var btnPesan: Button
 
-
-
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,26 +27,21 @@ class DetailLapanganActivity : AppCompatActivity() {
             insets
         }
 
-        // Ambil data yang dikirim melalui Intent
         val lapangan_id = intent.getIntExtra("lapangan_id", 0)
         val lapanganNama = intent.getStringExtra("lapangan_name")
         val lapanganJenis = intent.getStringExtra("jenis_name")
         val lapanganAlas = intent.getStringExtra("alas_name")
         val lapanganHarga = intent.getIntExtra("harga_umum", 0)
         val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
+        val lapanganHargaPoin = intent.getIntExtra("harga_poin", 0)
 
-        // Set data ke tampilan detail
         findViewById<TextView>(R.id.textHeaderNamaLapanganDetailLapangan).text = lapanganNama
         findViewById<TextView>(R.id.textNamaLapanganDetailLapangan).text = lapanganNama
         findViewById<TextView>(R.id.textJenisLapanganDetailLapangan).text = lapanganJenis
         findViewById<TextView>(R.id.textAlasLapanganDetailLapangan).text = lapanganAlas
-        findViewById<TextView>(R.id.textHargaUmumDetailLapangan).text = lapanganHarga.toString()
-        findViewById<TextView>(R.id.textHargaMemberDetailLapangan).text = lapanganHargaMember.toString()
-
-
-
-
-
+        findViewById<TextView>(R.id.textHargaUmumDetailLapangan).text = "Rp$lapanganHarga"
+        findViewById<TextView>(R.id.textHargaMemberDetailLapangan).text = "Rp$lapanganHargaMember"
+        findViewById<TextView>(R.id.textHargaPoinDetailLapangan).text = lapanganHargaPoin.toString()
 
         btnPesan = findViewById(R.id.buttonPesanLapanganDetailLapangan)
 
@@ -59,16 +53,10 @@ class DetailLapanganActivity : AppCompatActivity() {
             intent.putExtra("alas_name", lapanganAlas)
             intent.putExtra("harga_umum", lapanganHarga)
             intent.putExtra("harga_member", lapanganHargaMember)
+            intent.putExtra("harga_poin", lapanganHargaPoin)
             startActivity(intent)
         }
 
-
-
-
-
-
-
-        //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarDetailLapangan)
         bottomNavigationView.selectedItemId = R.id.menuHome
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->

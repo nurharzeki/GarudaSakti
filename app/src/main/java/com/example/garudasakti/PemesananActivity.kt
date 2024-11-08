@@ -1,24 +1,24 @@
 package com.example.garudasakti
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.garudasakti.models.JamResponse
 import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.TextInputEditText
 import retrofit2.*
-import org.w3c.dom.Text
-import java.util.Calendar
 
 class PemesananActivity : AppCompatActivity() {
 
@@ -30,13 +30,12 @@ class PemesananActivity : AppCompatActivity() {
     private lateinit var tvSelectedTime: TextView
     private lateinit var btnPickDate: Button
     private lateinit var btnPickTime: Button
-    private lateinit var btnPembayaran: Button
-
+    private lateinit var btnPilihPembayaran: Button
     private lateinit var tanggalTersedia: List<String>
-
     private lateinit var jamTersedia: List<String>
-
     private lateinit var tanggaldipilih: String
+    private lateinit var jamDipilih: String
+    private lateinit var namaTim: String
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,17 +43,19 @@ class PemesananActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_pemesanan)
 
-        // Terima data dari MainActivity
         val lapangan_id = intent.getIntExtra("lapangan_id", 0)
         val lapanganNama = intent.getStringExtra("lapangan_name")
         val lapanganJenis = intent.getStringExtra("jenis_name")
         val lapanganAlas = intent.getStringExtra("alas_name")
         val lapanganHarga = intent.getIntExtra("harga_umum", 0)
         val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
+        val lapanganHargaPoin = intent.getIntExtra("harga_poin", 0)
 
-        val token = token  // Ganti dengan token yang valid dari login
+        val token = token
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
+
+        namaTim = findViewById<TextInputEditText>(R.id.inputTextNamaTimPemesanan).text.toString()
 
         tanggalTersedia = listOf()
         jamTersedia = listOf()
@@ -73,13 +74,13 @@ class PemesananActivity : AppCompatActivity() {
             }
         })
 
-        // Tampilkan data di UI
         val tvLapanganNamaHeader = findViewById<TextView>(R.id.textHeaderNamaLapanganPemesanan)
         val tvLapanganNama = findViewById<TextView>(R.id.textNamaLapanganPemesanan)
         val tvLapanganAlas = findViewById<TextView>(R.id.textAlasLapanganPemesanan)
         val tvLapanganJenis = findViewById<TextView>(R.id.textJenisLapanganPemesanan)
         val tvLapanganHarga = findViewById<TextView>(R.id.textHargaUmumPemesanan)
         val tvLapanganHargaMember = findViewById<TextView>(R.id.textHargaMemberPemesanan)
+        val tvLapanganHargaPoin = findViewById<TextView>(R.id.textHargaPoinPemesanan)
 
         tvLapanganNamaHeader.text = lapanganNama
         tvLapanganNama.text = lapanganNama
@@ -87,81 +88,108 @@ class PemesananActivity : AppCompatActivity() {
         tvLapanganAlas.text = lapanganAlas
         tvLapanganHarga.text = "Rp$lapanganHarga"
         tvLapanganHargaMember.text = "Rp$lapanganHargaMember"
+        tvLapanganHargaPoin.text = lapanganHargaPoin.toString()
 
-        // Inisialisasi View
         tvSelectedDate = findViewById(R.id.textViewPilihTanggalPemesanan)
         tvSelectedTime = findViewById(R.id.textViewPilihJamPemesanan)
         btnPickDate = findViewById(R.id.buttonPilihTanggalPemesanan)
         btnPickTime = findViewById(R.id.buttonPilihJamPemesanan)
 
-        // Data dummy untuk tanggal yang tersedia
-        val dummyTanggalTersedia = listOf(
-            "2024-10-15",
-            "2024-10-18",
-            "2024-10-20"
-        )
-
-        // Data dummy untuk jam yang tersedia pada setiap tanggal
-        val dummyJamTersedia = mapOf(
-            "2024-10-15" to listOf("09:00", "10:00", "11:00"),
-            "2024-10-18" to listOf("12:00", "13:00", "14:00"),
-            "2024-10-20" to listOf("15:00", "16:00", "17:00")
-        )
-
-        // Event listener untuk tombol pilih tanggal
+        tanggaldipilih = ""
         btnPickDate.setOnClickListener {
-            // Buat Array untuk menyimpan daftar tanggal yang tersedia
             val tanggalArray = tanggalTersedia.toTypedArray()
-
-            // Buat AlertDialog untuk menampilkan pilihan tanggal
             val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Pilih Tanggal")
             builder.setItems(tanggalArray) { dialog, which ->
-                // Set tanggal yang dipilih ke TextView
                 val selectedDate = tanggalArray[which]
                 tvSelectedDate.text = selectedDate
                 tanggaldipilih = selectedDate
+
+                val call = apiService.getJam("Bearer $token", lapangan_id, selectedDate)
+                call.enqueue(object : Callback<List<JamResponse>> {
+                    override fun onResponse(call: Call<List<JamResponse>>, response: Response<List<JamResponse>>) {
+                        if (response.isSuccessful && response.body() != null) {
+                            jamTersedia = response.body()!!.map { it.jam }
+                        } else {
+                            Log.e("API Error", "Response failed: ${response.errorBody()}")
+                        }
+                    }
+                    override fun onFailure(call: Call<List<JamResponse>>, t: Throwable) {
+                        Log.e("API Error", "Failed to fetch jam: ${t.message}")
+                    }
+                })
+
             }
             builder.show()
         }
 
-        // Event listener untuk tombol pilih jam
+        jamDipilih = ""
         btnPickTime.setOnClickListener {
-            // Cek apakah pengguna sudah memilih tanggal
             val selectedDate = tanggaldipilih
-
             if (selectedDate.isEmpty()) {
-                // Tampilkan pesan jika belum memilih tanggal
-                android.widget.Toast.makeText(this, "Pilih tanggal terlebih dahulu!", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pilih tanggal terlebih dahulu!", android.widget.Toast.LENGTH_SHORT).show()
             } else {
                 if (jamTersedia.isNotEmpty()) {
-                    // Buat Array untuk menyimpan daftar jam
                     val jamArray = jamTersedia.toTypedArray()
-
-                    // Buat AlertDialog untuk menampilkan pilihan jam
                     val builder = android.app.AlertDialog.Builder(this)
                     builder.setTitle("Pilih Jam")
                     builder.setItems(jamArray) { dialog, which ->
-                        // Set jam yang dipilih ke TextView
                         tvSelectedTime.text = jamArray[which]
+                        jamDipilih = jamArray[which]
                     }
                     builder.show()
                 } else {
-                    // Tampilkan pesan jika tidak ada jam yang tersedia untuk tanggal tersebut
-                    android.widget.Toast.makeText(this, "Tidak ada jam yang tersedia untuk tanggal ini!", android.widget.Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Tidak ada jam yang tersedia untuk tanggal ini!", android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        btnPembayaran = findViewById(R.id.buttonPembayaranPesanan)
+        btnPilihPembayaran = findViewById(R.id.buttonPilihPembayaranPesanan)
 
-        btnPembayaran.setOnClickListener {
-            //ini ke halaman pembayaran, sesuaikan dengan API 3rd party payment gateway yang digunakan nantinya
-            android.widget.Toast.makeText(this, "Ke halaman pembayaran (tunggu API Pembayaran)", android.widget.Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, PembayaranActivity::class.java)
-            startActivity(intent)
+        btnPilihPembayaran.setOnClickListener {
+            val selectedDate = tanggaldipilih
+            val selectedTime = jamDipilih
+            namaTim = findViewById<TextInputEditText>(R.id.inputTextNamaTimPemesanan).text.toString()
+            if(selectedDate.isEmpty() || selectedTime.isEmpty() || namaTim.isEmpty()){
+                Toast.makeText(this, "Pilih nama tim, tanggal, dan jam terlebih dahulu!", Toast.LENGTH_SHORT).show()
+            } else {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Pilih Metode Pembayaran")
+                builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Bayar dengan Poin")) { dialog, which ->
+                    when (which) {
+                        0 -> {
+                            // Aksi untuk "Bayar Langsung"
+                            Toast.makeText(this, "Ke halaman pembayaran (tunggu API Pembayaran)", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, PembayaranActivity::class.java)
+                            intent.putExtra("lapangan_id", lapangan_id)
+                            intent.putExtra("tanggal", tanggaldipilih)
+                            intent.putExtra("jam", jamDipilih)
+                            intent.putExtra("namaTim", namaTim)
+                            intent.putExtra("lapangan_name", lapanganNama)
+                            intent.putExtra("jenis_name", lapanganJenis)
+                            intent.putExtra("alas_name", lapanganAlas)
+                            intent.putExtra("harga_umum", lapanganHarga)
+                            intent.putExtra("harga_member", lapanganHargaMember)
+                            intent.putExtra("harga_poin", lapanganHargaPoin)
+                            Log.d("Tanggal Dipilih", tanggaldipilih)
+                            Log.d("Jam Dipilih", jamDipilih)
+                            startActivity(intent)
+                        }
+                        1 -> {
+                            // Aksi untuk "Bayar dengan Saldo"
+                            Toast.makeText(this, "Bayar dengan Saldo dipilih", Toast.LENGTH_SHORT).show()
+                            // Tambahkan logika pembayaran dengan saldo di sini
+                        }
+                        2 -> {
+                            // Aksi untuk "Bayar dengan Poin"
+                            Toast.makeText(this, "Bayar dengan Poin dipilih", Toast.LENGTH_SHORT).show()
+                            // Tambahkan logika pembayaran dengan poin di sini
+                        }
+                    }
+                }
+                builder.show()
+            }
         }
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
