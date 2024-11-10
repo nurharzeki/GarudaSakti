@@ -29,6 +29,7 @@ class PesananSayaAdapter (private var data: ArrayList<PesananSaya>): RecyclerVie
         private val headLapangan: TextView = itemView.findViewById(R.id.textNamaLapanganPesananSayaHeader)
         private val lapangan: TextView = itemView.findViewById(R.id.textNamaLapanganPesananSaya)
         private val customerName: TextView = itemView.findViewById(R.id.textNamaPemesanPesananSaya)
+        private val namaTim: TextView = itemView.findViewById(R.id.textNamaTimPesananSaya)
         private val tanggal: TextView = itemView.findViewById(R.id.textTanggalPesananSaya)
         private val jam: TextView = itemView.findViewById(R.id.textJamPesananSaya)
 
@@ -36,6 +37,7 @@ class PesananSayaAdapter (private var data: ArrayList<PesananSaya>): RecyclerVie
             headLapangan.text = data.lapangan
             lapangan.text = data.lapangan
             customerName.text = data.customerName
+            namaTim.text = data.namaTim
             tanggal.text = data.tanggal
             jam.text = data.jam
         }

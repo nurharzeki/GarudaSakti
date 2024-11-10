@@ -24,6 +24,9 @@ data class User(
     @SerializedName("email")
     val email: String? = null,
 
+    @SerializedName("is_member")
+    val is_member: Int,
+
     @SerializedName("saldo")
     val saldo: Int? = null,
 

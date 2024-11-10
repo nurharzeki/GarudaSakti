@@ -79,6 +79,9 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()
                     val userName = loginResponse?.user?.name ?: "Unknown"
+                    val is_member = loginResponse?.user?.is_member
+                    val saldo = loginResponse?.user?.saldo
+                    val poin = loginResponse?.user?.poin
                     val token = loginResponse?.token ?: ""
                     if (loginResponse?.user != null && loginResponse.token != null) {
                         val token = loginResponse.token
@@ -88,6 +91,15 @@ class LoginActivity : AppCompatActivity() {
                         val editor = sharedPreferences.edit()
                         editor.putString("auth_token", token)
                         editor.putString("customer_name", userName)
+                        if (is_member != null) {
+                            editor.putInt("is_member", is_member)
+                        }
+                        if (saldo != null) {
+                            editor.putInt("saldo", saldo)
+                        }
+                        if (poin != null) {
+                            editor.putInt("poin", poin)
+                        }
                         editor.apply()
 
                         // Simpan token jika diperlukan, misal dengan SharedPreferences

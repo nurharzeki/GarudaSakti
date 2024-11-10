@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -13,18 +14,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.garudasakti.models.JamResponse
+import com.example.garudasakti.models.MemberResponse
+import com.example.garudasakti.models.PemesananPoinResponse
+import com.example.garudasakti.models.PemesananSaldoResponse
 import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.*
+import kotlin.properties.Delegates
 
 class PemesananActivity : AppCompatActivity() {
 
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
     }
+
+    private val is_member: Int by lazy {
+        getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("is_member", 0)
+    }
+
+    private var saldo by Delegates.notNull<Int>()
+    private var poin by Delegates.notNull<Int>()
 
     private lateinit var tvSelectedDate: TextView
     private lateinit var tvSelectedTime: TextView
@@ -36,6 +48,7 @@ class PemesananActivity : AppCompatActivity() {
     private lateinit var tanggaldipilih: String
     private lateinit var jamDipilih: String
     private lateinit var namaTim: String
+    private lateinit var selectedJam: String
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +67,29 @@ class PemesananActivity : AppCompatActivity() {
         val token = token
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
+
+        apiService.getMemberData("Bearer $token").enqueue(object : Callback<MemberResponse> {
+            override fun onResponse(call: Call<MemberResponse>, response: Response<MemberResponse>) {
+                if (response.isSuccessful && response.body() != null ) {
+                    if (response.body()?.membership_status == 1){
+                        val member = response.body()!!.data
+                        if (member != null) {
+                            saldo = member.saldo
+                            poin = member.poin
+                        }
+                    } else {
+                        //bukan member
+                        saldo = 0
+                        poin = 0
+                    }
+                } else {
+                    Toast.makeText(this@PemesananActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<MemberResponse>, t: Throwable) {
+                Toast.makeText(this@PemesananActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
+            }
+        })
 
         namaTim = findViewById<TextInputEditText>(R.id.inputTextNamaTimPemesanan).text.toString()
 
@@ -124,6 +160,7 @@ class PemesananActivity : AppCompatActivity() {
         }
 
         jamDipilih = ""
+        selectedJam = ""
         btnPickTime.setOnClickListener {
             val selectedDate = tanggaldipilih
             if (selectedDate.isEmpty()) {
@@ -135,7 +172,9 @@ class PemesananActivity : AppCompatActivity() {
                     builder.setTitle("Pilih Jam")
                     builder.setItems(jamArray) { dialog, which ->
                         tvSelectedTime.text = jamArray[which]
-                        jamDipilih = jamArray[which]
+                        selectedJam = jamArray[which]
+                        jamDipilih = selectedJam.split(" - ")[0]
+                        Log.d("jam dipilih", jamDipilih)
                     }
                     builder.show()
                 } else {
@@ -155,35 +194,227 @@ class PemesananActivity : AppCompatActivity() {
             } else {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle("Pilih Metode Pembayaran")
-                builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Bayar dengan Poin")) { dialog, which ->
+                builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Penukaran Poin")) { dialog, which ->
                     when (which) {
                         0 -> {
                             // Aksi untuk "Bayar Langsung"
-                            Toast.makeText(this, "Ke halaman pembayaran (tunggu API Pembayaran)", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this, PembayaranActivity::class.java)
-                            intent.putExtra("lapangan_id", lapangan_id)
-                            intent.putExtra("tanggal", tanggaldipilih)
-                            intent.putExtra("jam", jamDipilih)
-                            intent.putExtra("namaTim", namaTim)
-                            intent.putExtra("lapangan_name", lapanganNama)
-                            intent.putExtra("jenis_name", lapanganJenis)
-                            intent.putExtra("alas_name", lapanganAlas)
-                            intent.putExtra("harga_umum", lapanganHarga)
-                            intent.putExtra("harga_member", lapanganHargaMember)
-                            intent.putExtra("harga_poin", lapanganHargaPoin)
-                            Log.d("Tanggal Dipilih", tanggaldipilih)
-                            Log.d("Jam Dipilih", jamDipilih)
-                            startActivity(intent)
+                            Toast.makeText(this, "Bayar Langsung dipilih, tunggu 3rd Payment GateWay API", Toast.LENGTH_SHORT).show()
+                            if (is_member == 0){
+                                // jika bukan member (gunakan harga umum)
+
+                            } else {
+                                // jika member (gunakan harga member)
+                            }
                         }
                         1 -> {
                             // Aksi untuk "Bayar dengan Saldo"
-                            Toast.makeText(this, "Bayar dengan Saldo dipilih", Toast.LENGTH_SHORT).show()
-                            // Tambahkan logika pembayaran dengan saldo di sini
+                            if(is_member == 0){
+                                // jika bukan member
+                                AlertDialog.Builder(this).apply {
+                                    setTitle("Pemberitahuan")
+                                    setMessage(
+                                        "Maaf, Anda belum terdaftar sebagai member Garuda Sakti Sport Hall.\n" +
+                                                "Silahkan mendaftar membership terlebih dahulu atau pilih metode pembayaran lain."
+                                    )
+                                    setPositiveButton("OK") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    create()
+                                    show()
+                                }
+                            } else {
+                                // jika member
+                                if (saldo < lapanganHargaMember){
+                                    //jika saldo tidak cukup
+                                    AlertDialog.Builder(this).apply {
+                                        setTitle("Pemberitahuan")
+                                        setMessage(
+                                            "Maaf, saldo Anda tidak cukup.\n" +
+                                            "Silahkan isi saldo terlebih dahulu atau pilih metode pembayaran lain.\n" +
+                                            "\nSaldo Anda saat ini: $saldo\n" +
+                                            "Harga pemesanan: $lapanganHargaMember"
+                                        )
+                                        setPositiveButton("OK") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        create()
+                                        show()
+                                    }
+                                } else {
+                                    // jika saldo cukup = buat pesanan
+                                    AlertDialog.Builder(this).apply {
+                                        setTitle("Konfirmasi Pemesanan")
+                                        setMessage(
+                                            "Anda akan memesan lapangan sebagai berikut:\n\n" +
+                                                    "Nama Tim\t\t: $namaTim\n" +
+                                                    "Lapangan\t\t: $lapanganNama\n" +
+                                                    "Tanggal\t\t\t\t: $tanggaldipilih\n" +
+                                                    "Jam\t\t\t\t\t\t\t: $selectedJam\n\n" +
+                                                    "Saldo Anda saat ini\t\t: $saldo\n" +
+                                                    "Harga pemesanan\t\t\t: $lapanganHargaMember\n" +
+                                                    "\nSaldo Anda akan dikurangi sebesar harga pemesanan lapangan.\n" +
+                                                    "\nYakin?\n"
+                                        )
+                                        setPositiveButton("Konfirmasi") { dialog, _ ->
+                                            val call = apiService.pemesananSaldo("Bearer $token", lapangan_id, tanggaldipilih, jamDipilih, namaTim)
+                                            call.enqueue(object : Callback<PemesananSaldoResponse> {
+                                                override fun onResponse(call: Call<PemesananSaldoResponse>, response: Response<PemesananSaldoResponse>) {
+                                                    if (response.isSuccessful && response.body() != null) {
+                                                        val pemesananData = response.body()!!.data
+                                                        Toast.makeText(this@PemesananActivity, "Pemesanan Berhasil!", Toast.LENGTH_SHORT).show()
+
+                                                        val sharedPreferences = this@PemesananActivity.getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putInt("poin", pemesananData.poinTerakhir)
+                                                        editor.putInt("saldo", pemesananData.saldoTerakhir)
+                                                        editor.apply()
+
+                                                        val pointForAlertShow = pemesananData.poinTerakhir
+                                                        val saldoForAlertShow = pemesananData.saldoTerakhir
+
+                                                        AlertDialog.Builder(this@PemesananActivity).apply {
+                                                            setTitle("Selamat!")
+                                                            setMessage(
+                                                                "Pesanan Anda berhasil dibuat.\n" +
+                                                                "Anda mendapatkan 1 poin.\n\n" +
+                                                                "Poin Anda saat ini\t: $pointForAlertShow\n\n" +
+                                                                "Sisa saldo Anda\t\t\t: $saldoForAlertShow"
+                                                            )
+                                                            setPositiveButton("OK") { dialog, _ ->
+                                                                dialog.dismiss()
+                                                                val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                                                                intent.putExtra("nama_tim", namaTim)
+                                                                intent.putExtra("lapangan_name", lapanganNama)
+                                                                intent.putExtra("tanggal", tanggaldipilih)
+                                                                intent.putExtra("jam", selectedJam)
+                                                                intent.putExtra("sisa_saldo", pemesananData.saldoTerakhir)
+                                                                startActivity(intent)
+                                                                finish()
+                                                            }
+                                                            create()
+                                                            show()
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(this@PemesananActivity, "Gagal melakukan pemesanan: ${response.message()}", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                                override fun onFailure(call: Call<PemesananSaldoResponse>, t: Throwable) {
+                                                    Toast.makeText(this@PemesananActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                                                }
+                                            })
+                                            dialog.dismiss()
+                                        }
+                                        setNegativeButton("Batal") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        create()
+                                        show()
+                                    }
+                                }
+                            }
                         }
                         2 -> {
                             // Aksi untuk "Bayar dengan Poin"
-                            Toast.makeText(this, "Bayar dengan Poin dipilih", Toast.LENGTH_SHORT).show()
-                            // Tambahkan logika pembayaran dengan poin di sini
+                            if(is_member == 0){
+                                // jika bukan member
+                                AlertDialog.Builder(this).apply {
+                                    setTitle("Pemberitahuan")
+                                    setMessage(
+                                        "Maaf, Anda belum terdaftar sebagai member Garuda Sakti Sport Hall.\n" +
+                                        "Silahkan mendaftar membership terlebih dahulu atau pilih metode pembayaran lain."
+                                    )
+                                    setPositiveButton("OK") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    create()
+                                    show()
+                                }
+                            } else {
+                                // jika member
+                                if (poin < lapanganHargaPoin){
+                                    // jika poin tidak cukup
+                                    AlertDialog.Builder(this).apply {
+                                        setTitle("Pemberitahuan")
+                                        setMessage(
+                                            "Maaf, poin Anda tidak cukup.\n" +
+                                                    "Silahkan pilih metode pembayaran lain.\n\n" +
+                                                    "Poin Anda saat ini\t\t: $poin\n" +
+                                                    "Harga penukaran poin\t: $lapanganHargaPoin"
+                                        )
+                                        setPositiveButton("OK") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        create()
+                                        show()
+                                    }
+                                } else {
+                                    // jika poin cukup = buat pesanan
+                                    AlertDialog.Builder(this).apply {
+                                        setTitle("Konfirmasi Pemesanan")
+                                        setMessage(
+                                            "Anda akan memesan lapangan sebagai berikut:\n\n" +
+                                                    "Nama Tim\t\t: $namaTim\n" +
+                                                    "Lapangan\t\t: $lapanganNama\n" +
+                                                    "Tanggal\t\t\t\t: $tanggaldipilih\n" +
+                                                    "Jam\t\t\t\t\t\t\t: $selectedJam\n\n" +
+                                                    "Poin Anda saat ini\t\t: $poin\n" +
+                                                    "Harga pemesanan\t\t\t: $lapanganHargaPoin\n" +
+                                                    "\nPoin Anda akan dikurangi sebesar harga pemesanan lapangan.\n" +
+                                                    "\nYakin?\n"
+                                        )
+                                        setPositiveButton("Konfirmasi") { dialog, _ ->
+
+                                            val call = apiService.pemesananPoin("Bearer $token", lapangan_id, tanggaldipilih, jamDipilih, namaTim)
+                                            call.enqueue(object : Callback<PemesananPoinResponse> {
+                                                override fun onResponse(call: Call<PemesananPoinResponse>, response: Response<PemesananPoinResponse>) {
+                                                    if (response.isSuccessful && response.body() != null) {
+                                                        val pemesananData = response.body()!!.data
+                                                        Toast.makeText(this@PemesananActivity, "Pemesanan Berhasil!", Toast.LENGTH_SHORT).show()
+
+                                                        val sharedPreferences = this@PemesananActivity.getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putInt("poin", pemesananData.poinTerakhir)
+                                                        editor.apply()
+
+                                                        val pointForAlertShow = pemesananData.poinTerakhir
+
+                                                        AlertDialog.Builder(this@PemesananActivity).apply {
+                                                            setTitle("Selamat!")
+                                                            setMessage(
+                                                                "Pesanan Anda berhasil dibuat.\n" +
+                                                                        "Sisa poin Anda\t\t: $pointForAlertShow\n\n"
+                                                            )
+                                                            setPositiveButton("OK") { dialog, _ ->
+                                                                dialog.dismiss()
+                                                                val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                                                                intent.putExtra("nama_tim", namaTim)
+                                                                intent.putExtra("lapangan_name", lapanganNama)
+                                                                intent.putExtra("tanggal", tanggaldipilih)
+                                                                intent.putExtra("jam", selectedJam)
+                                                                startActivity(intent)
+                                                                finish()
+                                                            }
+                                                            create()
+                                                            show()
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(this@PemesananActivity, "Gagal melakukan pemesanan: ${response.message()}", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                                override fun onFailure(call: Call<PemesananPoinResponse>, t: Throwable) {
+                                                    Toast.makeText(this@PemesananActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                                                }
+                                            })
+                                            dialog.dismiss()
+                                        }
+                                        setNegativeButton("Batal") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        create()
+                                        show()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
