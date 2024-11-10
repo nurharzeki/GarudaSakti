@@ -83,7 +83,8 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:text="Username" />
+                        android:hint="Username"
+                        android:text="-" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -107,7 +108,8 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:text="Nama Lengkap" />
+                        android:hint="Nama"
+                        android:text="-" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -131,7 +133,8 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:text="Email" />
+                        android:hint="Email"
+                        android:text="-" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
