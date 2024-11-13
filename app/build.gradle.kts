@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,7 +66,6 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
 
     // Midtrans
-    // implementation("com.midtrans:uikit:2.3.9")
-
+    implementation("com.midtrans:uikit:2.0.0-SANDBOX")
 
 }

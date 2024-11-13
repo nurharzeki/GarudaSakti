@@ -5,12 +5,15 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.garudasakti.models.JamResponse
@@ -23,23 +26,25 @@ import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.midtrans.sdk.uikit.api.model.TransactionResult
+import com.midtrans.sdk.corekit.models.snap.TransactionResult.*
+import com.midtrans.sdk.uikit.external.UiKitApi
+import com.midtrans.sdk.uikit.internal.util.UiKitConstants
+import com.midtrans.sdk.uikit.internal.util.UiKitConstants.STATUS_CANCELED
 import retrofit2.*
 import kotlin.properties.Delegates
 
 class PemesananActivity : AppCompatActivity() {
-
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
     }
-
     private val is_member: Int by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("is_member", 0)
     }
-
     private var saldo by Delegates.notNull<Int>()
     private var poin by Delegates.notNull<Int>()
-
     private lateinit var tvSelectedDate: TextView
     private lateinit var tvSelectedTime: TextView
     private lateinit var btnPickDate: Button
@@ -51,13 +56,31 @@ class PemesananActivity : AppCompatActivity() {
     private lateinit var jamDipilih: List<String>
     private lateinit var namaTim: String
     private lateinit var selectedJam: String
+    private var lapanganID by Delegates.notNull<Int>()
+    private lateinit var lapanganName: String
+    private lateinit var paymentLauncher: ActivityResultLauncher<Intent>
+    var qtyJamDipilih by Delegates.notNull<Int>()
+    private var pendingSnapToken: String? = null
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pemesanan)
-
+        UiKitApi.Builder()
+            .withMerchantClientKey("SB-Mid-client-oPkm6mdSZxomn5n8")
+            .withContext(applicationContext)
+            .withMerchantUrl("https://4290-223-255-231-152.ngrok-free.app/")
+            .enableLog(true)
+            .build()
+        setLocaleNew("id")
+        paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result?.resultCode == RESULT_OK) {
+                result.data?.let {
+                    val transactionResult = it.getParcelableExtra<TransactionResult>(UiKitConstants.KEY_TRANSACTION_RESULT)
+                }
+            }
+        }
         val lapangan_id = intent.getIntExtra("lapangan_id", 0)
         val lapanganNama = intent.getStringExtra("lapangan_name")
         val lapanganJenis = intent.getStringExtra("jenis_name")
@@ -65,12 +88,13 @@ class PemesananActivity : AppCompatActivity() {
         val lapanganHarga = intent.getIntExtra("harga_umum", 0)
         val lapanganHargaMember = intent.getIntExtra("harga_member", 0)
         val lapanganHargaPoin = intent.getIntExtra("harga_poin", 0)
-
+        lapanganID = lapangan_id
+        if (lapanganNama != null) {
+            lapanganName = lapanganNama
+        }
         val token = token
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
-
-        // ambil informasi customer apakah member atau bukan, ambil jumlah saldo dan poinnya
         apiService.getMemberData("Bearer $token").enqueue(object : Callback<MemberResponse> {
             override fun onResponse(call: Call<MemberResponse>, response: Response<MemberResponse>) {
                 if (response.isSuccessful && response.body() != null ) {
@@ -81,7 +105,6 @@ class PemesananActivity : AppCompatActivity() {
                             poin = member.poin
                         }
                     } else {
-                        //bukan member
                         saldo = 0
                         poin = 0
                     }
@@ -93,11 +116,8 @@ class PemesananActivity : AppCompatActivity() {
                 Toast.makeText(this@PemesananActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
             }
         })
-
         tanggalTersedia = listOf()
         jamTersedia = listOf()
-
-        // ambil tanggal tersedia untuk lapangan yang dipilih
         val call = apiService.getTanggal("Bearer $token", lapangan_id)
         call.enqueue(object : Callback<List<TanggalResponse>> {
             override fun onResponse(call: Call<List<TanggalResponse>>, response: Response<List<TanggalResponse>>) {
@@ -111,9 +131,7 @@ class PemesananActivity : AppCompatActivity() {
                 Log.e("API Error", "Failed to fetch tanggal: ${t.message}")
             }
         })
-
         namaTim = findViewById<TextInputEditText>(R.id.inputTextNamaTimPemesanan).text.toString()
-
         val tvLapanganNamaHeader = findViewById<TextView>(R.id.textHeaderNamaLapanganPemesanan)
         val tvLapanganNama = findViewById<TextView>(R.id.textNamaLapanganPemesanan)
         val tvLapanganAlas = findViewById<TextView>(R.id.textAlasLapanganPemesanan)
@@ -121,7 +139,6 @@ class PemesananActivity : AppCompatActivity() {
         val tvLapanganHarga = findViewById<TextView>(R.id.textHargaUmumPemesanan)
         val tvLapanganHargaMember = findViewById<TextView>(R.id.textHargaMemberPemesanan)
         val tvLapanganHargaPoin = findViewById<TextView>(R.id.textHargaPoinPemesanan)
-
         tvLapanganNamaHeader.text = lapanganNama
         tvLapanganNama.text = lapanganNama
         tvLapanganJenis.text = lapanganJenis
@@ -129,24 +146,19 @@ class PemesananActivity : AppCompatActivity() {
         tvLapanganHarga.text = "Rp$lapanganHarga"
         tvLapanganHargaMember.text = "Rp$lapanganHargaMember"
         tvLapanganHargaPoin.text = lapanganHargaPoin.toString()
-
         tvSelectedDate = findViewById(R.id.textViewPilihTanggalPemesanan)
         tvSelectedTime = findViewById(R.id.textViewPilihJamPemesanan)
         btnPickDate = findViewById(R.id.buttonPilihTanggalPemesanan)
         btnPickTime = findViewById(R.id.buttonPilihJamPemesanan)
-
-        // pilih tanggal
         tanggaldipilih = ""
         btnPickDate.setOnClickListener {
             val tanggalArray = tanggalTersedia.toTypedArray()
-            val builder = android.app.AlertDialog.Builder(this)
+            val builder = AlertDialog.Builder(this)
             builder.setTitle("Pilih Tanggal")
             builder.setItems(tanggalArray) { dialog, which ->
                 val selectedDate = tanggalArray[which]
                 tvSelectedDate.text = selectedDate
                 tanggaldipilih = selectedDate
-
-                // ambil data jam tersedia untuk lapangan dan tanggal yang dipilih
                 val call = apiService.getJam("Bearer $token", lapangan_id, selectedDate)
                 call.enqueue(object : Callback<List<JamResponse>> {
                     override fun onResponse(call: Call<List<JamResponse>>, response: Response<List<JamResponse>>) {
@@ -160,12 +172,9 @@ class PemesananActivity : AppCompatActivity() {
                         Log.e("API Error", "Failed to fetch jam: ${t.message}")
                     }
                 })
-
             }
             builder.show()
         }
-
-        // pilih jam
         selectedJam = ""
         var jumlahJamDipilih = 0
         var selectedItemsStatus = BooleanArray(0)
@@ -194,9 +203,9 @@ class PemesananActivity : AppCompatActivity() {
                     builder.setPositiveButton("OK") { dialog, _ ->
                         if (selectedJams.isNotEmpty()) {
                             jumlahJamDipilih = selectedJams.size
+                            qtyJamDipilih = jumlahJamDipilih
                             selectedJam = selectedJams.joinToString(",\n")
                             tvSelectedTime.text = selectedJams.joinToString(",\n")
-                            // Menyimpan jam yang dipilih ke dalam list
                             jamDipilih = selectedJams.map { it.split(" - ")[0] }
                             dialog.dismiss()
                         } else {
@@ -210,9 +219,7 @@ class PemesananActivity : AppCompatActivity() {
                 }
             }
         }
-
         btnPilihPembayaran = findViewById(R.id.buttonPilihPembayaranPesanan)
-
         btnPilihPembayaran.setOnClickListener {
             var totalHargaPemesanan = 0
             var totalPoinPemesanan = 0
@@ -226,11 +233,8 @@ class PemesananActivity : AppCompatActivity() {
                 builder.setTitle("Pilih Metode Pembayaran")
                 builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Penukaran Poin")) { dialog, which ->
                     when (which) {
-                        // bayar langsung
                         0 -> {
-                            // Aksi untuk "Bayar Langsung"
                             if (is_member == 0){
-                                // jika bukan member (gunakan harga umum)
                                 totalHargaPemesanan = lapanganHarga*jumlahJamDipilih
                                 AlertDialog.Builder(this).apply {
                                     setTitle("Konfirmasi Pemesanan")
@@ -244,36 +248,35 @@ class PemesananActivity : AppCompatActivity() {
                                                 "\nYakin?\n"
                                     )
                                     setPositiveButton("Konfirmasi") { dialog, _ ->
-                                        // Logika pemesanan/pembayaran
-                                        Toast.makeText(this@PemesananActivity, "Bayar Langsung dipilih, tunggu Midtrans", Toast.LENGTH_SHORT).show()
                                         val pemesananRequest = PemesananLangsungRequest(
                                             nama_tim = namaTim,
                                             lapangan_id = lapangan_id,
                                             tanggal = tanggaldipilih,
                                             jam = jamDipilih
                                         )
-//                                        apiService.pemesananLangsung("Bearer $token", pemesananRequest).enqueue(object : Callback<PemesananLangsungResponse> {
-//                                            override fun onResponse(call: Call<PemesananLangsungResponse>, response: Response<PemesananLangsungResponse>) {
-//                                                if (response.isSuccessful) {
-//                                                    val snapToken = response.body()?.snap_token
-//                                                    if (snapToken != null) {
-//                                                        // Jika berhasil, arahkan ke halaman pembayaran Midtrans
-//                                                        tampilkanPembayaranMidtrans(snapToken)
-//                                                    } else {
-//                                                        // Tangani jika snap_token tidak ditemukan
-//                                                        Toast.makeText(this@PemesananActivity, "Gagal mendapatkan token pembayaran", Toast.LENGTH_SHORT).show()
-//                                                    }
-//                                                } else {
-//                                                    // Tangani jika request gagal
-//                                                    Toast.makeText(this@PemesananActivity, "Terjadi kesalahan dalam pemesanan", Toast.LENGTH_SHORT).show()
-//                                                }
-//                                            }
-//
-//                                            override fun onFailure(call: Call<PemesananLangsungResponse>, t: Throwable) {
-//                                                // Tangani jika Retrofit gagal melakukan request
-//                                                Toast.makeText(this@PemesananActivity, "Gagal menghubungi server", Toast.LENGTH_SHORT).show()
-//                                            }
-//                                        })
+                                        apiService.pemesananLangsung("Bearer $token", pemesananRequest).enqueue(object : Callback<PemesananLangsungResponse> {
+                                            override fun onResponse(call: Call<PemesananLangsungResponse>, response: Response<PemesananLangsungResponse>) {
+                                                if (response.isSuccessful) {
+                                                    val snapToken = response.body()?.snap_token
+                                                    if (snapToken != null) {
+                                                        val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putString("pendingSnapToken", pendingSnapToken)
+                                                        val expiryTime = System.currentTimeMillis() + 10 * 60 * 1000 // 10 menit dalam milidetik
+                                                        editor.putLong("expiryTime", expiryTime)
+                                                        editor.apply()
+                                                        tampilkanPembayaranMidtrans(snapToken)
+                                                    } else {
+                                                        Toast.makeText(this@PemesananActivity, "Gagal mendapatkan token pembayaran", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                } else {
+                                                    Toast.makeText(this@PemesananActivity, "Terjadi kesalahan dalam pemesanan", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                            override fun onFailure(call: Call<PemesananLangsungResponse>, t: Throwable) {
+                                                Toast.makeText(this@PemesananActivity, "Gagal menghubungi server", Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
                                         dialog.dismiss()
                                     }
                                     setNegativeButton("Batal") { dialog, _ ->
@@ -283,7 +286,6 @@ class PemesananActivity : AppCompatActivity() {
                                     show()
                                 }
                             } else {
-                                // jika member (gunakan harga member)
                                 totalHargaPemesanan = lapanganHargaMember * jumlahJamDipilih
                                 AlertDialog.Builder(this).apply {
                                     setTitle("Konfirmasi Pemesanan")
@@ -297,36 +299,35 @@ class PemesananActivity : AppCompatActivity() {
                                                 "\nYakin?\n"
                                     )
                                     setPositiveButton("Konfirmasi") { dialog, _ ->
-                                        Toast.makeText(this@PemesananActivity, "Bayar Langsung dipilih, tunggu Midtrans", Toast.LENGTH_SHORT).show()
-                                        // Logika pemesanan/pembayaran
                                         val pemesananRequest = PemesananLangsungRequest(
                                             nama_tim = namaTim,
                                             lapangan_id = lapangan_id,
                                             tanggal = tanggaldipilih,
                                             jam = jamDipilih
                                         )
-//                                        apiService.pemesananLangsung("Bearer $token", pemesananRequest).enqueue(object : Callback<PemesananLangsungResponse> {
-//                                            override fun onResponse(call: Call<PemesananLangsungResponse>, response: Response<PemesananLangsungResponse>) {
-//                                                if (response.isSuccessful) {
-//                                                    val snapToken = response.body()?.snap_token
-//                                                    if (snapToken != null) {
-//                                                        // Jika berhasil, arahkan ke halaman pembayaran Midtrans
-//                                                        tampilkanPembayaranMidtrans(snapToken)
-//                                                    } else {
-//                                                        // Tangani jika snap_token tidak ditemukan
-//                                                        Toast.makeText(this@PemesananActivity, "Gagal mendapatkan token pembayaran", Toast.LENGTH_SHORT).show()
-//                                                    }
-//                                                } else {
-//                                                    // Tangani jika request gagal
-//                                                    Toast.makeText(this@PemesananActivity, "Terjadi kesalahan dalam pemesanan", Toast.LENGTH_SHORT).show()
-//                                                }
-//                                            }
-//
-//                                            override fun onFailure(call: Call<PemesananLangsungResponse>, t: Throwable) {
-//                                                // Tangani jika Retrofit gagal melakukan request
-//                                                Toast.makeText(this@PemesananActivity, "Gagal menghubungi server", Toast.LENGTH_SHORT).show()
-//                                            }
-//                                        })
+                                        apiService.pemesananLangsung("Bearer $token", pemesananRequest).enqueue(object : Callback<PemesananLangsungResponse> {
+                                            override fun onResponse(call: Call<PemesananLangsungResponse>, response: Response<PemesananLangsungResponse>) {
+                                                if (response.isSuccessful) {
+                                                    val snapToken = response.body()?.snap_token
+                                                    if (snapToken != null) {
+                                                        val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putString("pendingSnapToken", pendingSnapToken)
+                                                        val expiryTime = System.currentTimeMillis() + 10 * 60 * 1000 // 10 menit dalam milidetik
+                                                        editor.putLong("expiryTime", expiryTime)
+                                                        editor.apply()
+                                                        tampilkanPembayaranMidtrans(snapToken)
+                                                    } else {
+                                                        Toast.makeText(this@PemesananActivity, "Gagal mendapatkan token pembayaran", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                } else {
+                                                    Toast.makeText(this@PemesananActivity, "Terjadi kesalahan dalam pemesanan", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                            override fun onFailure(call: Call<PemesananLangsungResponse>, t: Throwable) {
+                                                Toast.makeText(this@PemesananActivity, "Gagal menghubungi server", Toast.LENGTH_SHORT).show()
+                                            }
+                                        })
                                         dialog.dismiss()
                                     }
                                     setNegativeButton("Batal") { dialog, _ ->
@@ -337,12 +338,8 @@ class PemesananActivity : AppCompatActivity() {
                                 }
                             }
                         }
-
-                        // bayar dengan saldo
                         1 -> {
-                            // Aksi untuk "Bayar dengan Saldo"
                             if(is_member == 0){
-                                // jika bukan member
                                 AlertDialog.Builder(this).apply {
                                     setTitle("Pemberitahuan")
                                     setMessage(
@@ -356,10 +353,8 @@ class PemesananActivity : AppCompatActivity() {
                                     show()
                                 }
                             } else {
-                                // jika member
                                 totalHargaPemesanan = jumlahJamDipilih * lapanganHargaMember
                                 if (saldo < totalHargaPemesanan){
-                                    //jika saldo tidak cukup
                                     AlertDialog.Builder(this).apply {
                                         setTitle("Pemberitahuan")
                                         setMessage(
@@ -375,7 +370,6 @@ class PemesananActivity : AppCompatActivity() {
                                         show()
                                     }
                                 } else {
-                                    // jika saldo cukup = buat pesanan
                                     AlertDialog.Builder(this).apply {
                                         setTitle("Konfirmasi Pemesanan")
                                         setMessage(
@@ -396,16 +390,13 @@ class PemesananActivity : AppCompatActivity() {
                                                     if (response.isSuccessful && response.body() != null) {
                                                         val pemesananData = response.body()!!.data
                                                         Toast.makeText(this@PemesananActivity, "Pemesanan Berhasil!", Toast.LENGTH_SHORT).show()
-
                                                         val sharedPreferences = this@PemesananActivity.getSharedPreferences("user_prefs", MODE_PRIVATE)
                                                         val editor = sharedPreferences.edit()
                                                         editor.putInt("poin", pemesananData.poinTerakhir)
                                                         editor.putInt("saldo", pemesananData.saldoTerakhir)
                                                         editor.apply()
-
                                                         val pointForAlertShow = pemesananData.poinTerakhir
                                                         val saldoForAlertShow = pemesananData.saldoTerakhir
-
                                                         AlertDialog.Builder(this@PemesananActivity).apply {
                                                             setTitle("Selamat!")
                                                             setMessage(
@@ -447,12 +438,8 @@ class PemesananActivity : AppCompatActivity() {
                                 }
                             }
                         }
-
-                        // penukaran poin
                         2 -> {
-                            // Aksi untuk "Bayar dengan Poin"
                             if(is_member == 0){
-                                // jika bukan member
                                 AlertDialog.Builder(this).apply {
                                     setTitle("Pemberitahuan")
                                     setMessage(
@@ -466,10 +453,8 @@ class PemesananActivity : AppCompatActivity() {
                                     show()
                                 }
                             } else {
-                                // jika member
                                 totalPoinPemesanan = lapanganHargaPoin * jumlahJamDipilih
                                 if (poin < totalPoinPemesanan){
-                                    // jika poin tidak cukup
                                     AlertDialog.Builder(this).apply {
                                         setTitle("Pemberitahuan")
                                         setMessage(
@@ -485,7 +470,6 @@ class PemesananActivity : AppCompatActivity() {
                                         show()
                                     }
                                 } else {
-                                    // jika poin cukup = buat pesanan
                                     AlertDialog.Builder(this).apply {
                                         setTitle("Konfirmasi Pemesanan")
                                         setMessage(
@@ -500,21 +484,17 @@ class PemesananActivity : AppCompatActivity() {
                                                     "\nYakin?\n"
                                         )
                                         setPositiveButton("Konfirmasi") { dialog, _ ->
-
                                             val call = apiService.pemesananPoin("Bearer $token", lapangan_id, tanggaldipilih, jamDipilih, namaTim)
                                             call.enqueue(object : Callback<PemesananPoinResponse> {
                                                 override fun onResponse(call: Call<PemesananPoinResponse>, response: Response<PemesananPoinResponse>) {
                                                     if (response.isSuccessful && response.body() != null) {
                                                         val pemesananData = response.body()!!.data
                                                         Toast.makeText(this@PemesananActivity, "Pemesanan Berhasil!", Toast.LENGTH_SHORT).show()
-
                                                         val sharedPreferences = this@PemesananActivity.getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
                                                         val editor = sharedPreferences.edit()
                                                         editor.putInt("poin", pemesananData.poinTerakhir)
                                                         editor.apply()
-
                                                         val pointForAlertShow = pemesananData.poinTerakhir
-
                                                         AlertDialog.Builder(this@PemesananActivity).apply {
                                                             setTitle("Selamat!")
                                                             setMessage(
@@ -558,13 +538,11 @@ class PemesananActivity : AppCompatActivity() {
                 builder.show()
             }
         }
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarPemesanan)
         bottomNavigationView.selectedItemId = R.id.menuHome
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -590,13 +568,166 @@ class PemesananActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
     }
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == RESULT_OK) {
+            val transactionResult = data?.getParcelableExtra<TransactionResult>(
+                UiKitConstants.KEY_TRANSACTION_RESULT
+            )
+            if (transactionResult != null) {
+                when (transactionResult.status) {
+                    STATUS_SUCCESS -> {
+                        val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                        sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
+                        if(is_member == 1){
+                            var pointForAlertShow = poin + qtyJamDipilih
+                            AlertDialog.Builder(this@PemesananActivity).apply {
+                                setTitle("Selamat!")
+                                setMessage(
+                                    "Pesanan Anda berhasil dibuat.\n" +
+                                            "Anda mendapatkan $qtyJamDipilih poin.\n\n" +
+                                            "Poin Anda saat ini\t: $pointForAlertShow\n\n"
+                                )
+                                setPositiveButton("OK") { dialog, _ ->
+                                    dialog.dismiss()
+                                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                                    intent.putExtra("nama_tim", namaTim)
+                                    intent.putExtra("lapangan_name", lapanganName)
+                                    intent.putExtra("tanggal", tanggaldipilih)
+                                    intent.putExtra("jam", selectedJam)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                create()
+                                show()
+                            }
+                        } else {
+                            AlertDialog.Builder(this@PemesananActivity).apply {
+                                setTitle("Selamat!")
+                                setMessage(
+                                    "Pesanan Anda berhasil dibuat.\n"
+                                )
+                                setPositiveButton("OK") { dialog, _ ->
+                                    dialog.dismiss()
+                                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                                    intent.putExtra("nama_tim", namaTim)
+                                    intent.putExtra("lapangan_name", lapanganName)
+                                    intent.putExtra("tanggal", tanggaldipilih)
+                                    intent.putExtra("jam", selectedJam)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                create()
+                                show()
+                            }
+                        }
+                    }
+                    STATUS_PENDING -> {
+                        AlertDialog.Builder(this@PemesananActivity).apply {
+                            setTitle("Pesanan Tertunda")
+                            setMessage(
+                                "Ada pembayaran Anda yang tertunda. Segera lakukan pembayaran sebelum pembayarannya kadaluwarsa. \n" +
+                                "Lanjut bayar sekarang?"
+                            )
+                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
+                                pendingSnapToken?.let { snapToken ->
+                                    tampilkanPembayaranMidtrans(snapToken)
+                                }
+                                dialog.dismiss()
+                            }
+                            setNegativeButton("Batalkan Pesanan") { dialog, _ ->
+                                val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                                sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
+                                val retrofit = RetrofitConfig().getRetrofitClientInstance()
+                                val apiService = retrofit.create(MainInterface::class.java)
+                                apiService.pesananBatal("Bearer $token", lapanganID, tanggaldipilih, jamDipilih).enqueue(object : Callback<Void> {
+                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                        if (response.isSuccessful) {
+                                            Toast.makeText(this@PemesananActivity, "Transaksi Dibatalkan.", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            Log.e("error response batalkan pesanan", response.body().toString())
+                                        }
+                                    }
+                                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                                        t.message?.let {
+                                            Log.e("failure response batalkan pesanan",
+                                                it
+                                            )
+                                        }
+                                    }
+                                })
+                                dialog.dismiss()
+                            }
+                            create()
+                            show()
+                        }
+                    }
+                    STATUS_FAILED -> {
+                        Toast.makeText(this, "Transaksi Gagal.", Toast.LENGTH_SHORT).show()
+                    }
+                    STATUS_CANCELED -> {
+                        AlertDialog.Builder(this@PemesananActivity).apply {
+                            setTitle("Pesanan Tertunda")
+                            setMessage(
+                                "Ada pembayaran Anda yang tertunda. Segera lakukan pembayaran sebelum pembayarannya kadaluwarsa. \n" +
+                                        "Lanjut bayar sekarang?"
+                            )
+                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
+                                pendingSnapToken?.let { snapToken ->
+                                    tampilkanPembayaranMidtrans(snapToken)
+                                }
+                                dialog.dismiss()
+                            }
+                            setNegativeButton("Batalkan Pesanan") { dialog, _ ->
+                                val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                                sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
+                                val retrofit = RetrofitConfig().getRetrofitClientInstance()
+                                val apiService = retrofit.create(MainInterface::class.java)
+                                apiService.pesananBatal("Bearer $token", lapanganID, tanggaldipilih, jamDipilih).enqueue(object : Callback<Void> {
+                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                        if (response.isSuccessful) {
+                                            Toast.makeText(this@PemesananActivity, "Transaksi Dibatalkan.", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            Log.e("error response batalkan pesanan", response.body().toString())
+                                        }
+                                    }
+                                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                                        t.message?.let {
+                                            Log.e("failure response batalkan pesanan",
+                                                it
+                                            )
+                                        }
+                                    }
+                                })
+                                dialog.dismiss()
+                            }
+                            create()
+                            show()
+                        }
+                    }
+                    STATUS_INVALID -> {
+                        Toast.makeText(this, "Transaction Invalid.", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(this, "Transaction Invalid.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Transaction Invalid", Toast.LENGTH_SHORT).show()
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
     fun tampilkanPembayaranMidtrans(snapToken: String) {
-//        val intent = Intent(this, WebViewActivity::class.java)
-//        intent.putExtra("snap_token", snapToken)
-//        startActivity(intent)
+        pendingSnapToken = snapToken
+        UiKitApi.getDefaultInstance().startPaymentUiFlow(
+            this@PemesananActivity,
+            paymentLauncher,
+            snapToken
+        )
     }
-
+    fun setLocaleNew(languageCode: String?) {
+        val locales = LocaleListCompat.forLanguageTags(languageCode)
+        AppCompatDelegate.setApplicationLocales(locales)
+    }
 }
