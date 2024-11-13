@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Garuda Sakti</string>
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="midtrans_client_key">SB-Mid-client-oPkm6mdSZxomn5n8</string>
+    <string name="midtrans_server_key">SB-Mid-server-BiYdjF8DXWMiyCcvjgAw6ebL</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

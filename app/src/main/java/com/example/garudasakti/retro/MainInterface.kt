@@ -5,6 +5,8 @@ import com.example.garudasakti.models.JamResponse
 import com.example.garudasakti.models.KetentuanMembershipResponse
 import com.example.garudasakti.models.LapanganHome
 import com.example.garudasakti.models.MemberResponse
+import com.example.garudasakti.models.PemesananLangsungRequest
+import com.example.garudasakti.models.PemesananLangsungResponse
 import com.example.garudasakti.models.PemesananPoinResponse
 import com.example.garudasakti.models.PemesananSaldoResponse
 import com.example.garudasakti.models.PesananSaya
@@ -96,7 +98,7 @@ interface MainInterface {
         @Header("Authorization") token: String,
         @Field("lapangan_id") lapanganId: Int,
         @Field("tanggal") tanggal: String,
-        @Field("jam") jam: String,
+        @Field("jam[]") jamList: List<String>,
         @Field("nama_tim") namaTim: String
     ): Call<PemesananSaldoResponse>
 
@@ -106,9 +108,14 @@ interface MainInterface {
         @Header("Authorization") token: String,
         @Field("lapangan_id") lapanganId: Int,
         @Field("tanggal") tanggal: String,
-        @Field("jam") jam: String,
+        @Field("jam[]") jamList: List<String>,
         @Field("nama_tim") namaTim: String
     ): Call<PemesananPoinResponse>
 
+    @POST("pemesanan-langsung")
+    fun pemesananLangsung(
+        @Header("Authorization") token: String,
+        @Body requestBody: PemesananLangsungRequest
+    ): Call<PemesananLangsungResponse>
 
 }

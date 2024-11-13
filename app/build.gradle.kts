@@ -64,5 +64,8 @@ dependencies {
     // Material Components
     implementation("com.google.android.material:material:1.9.0")
 
+    // Midtrans
+    // implementation("com.midtrans:uikit:2.3.9")
+
 
 }

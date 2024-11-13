@@ -12,7 +12,7 @@ data class PemesananPoinData(
     @SerializedName("customer_id") val customerId: Int,
     @SerializedName("lapangan_id") val lapanganId: Int,
     @SerializedName("tanggal") val tanggal: String,
-    @SerializedName("jam") val jam: String,
+    @SerializedName("jam") val jam: List<String>,
     @SerializedName("nama_tim") val namaTim: String,
     @SerializedName("poin_terakhir") val poinTerakhir: Int
 )
