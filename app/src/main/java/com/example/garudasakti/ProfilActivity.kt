@@ -269,10 +269,6 @@ class ProfilActivity : AppCompatActivity() {
 
     }
 
-    private fun fetchProfilData() {
-
-    }
-
     private fun logout() {
         apiInterface.logout("Bearer $token").enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {

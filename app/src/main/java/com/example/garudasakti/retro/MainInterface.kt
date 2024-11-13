@@ -118,4 +118,13 @@ interface MainInterface {
         @Body requestBody: PemesananLangsungRequest
     ): Call<PemesananLangsungResponse>
 
+    @FormUrlEncoded
+    @POST("batal-pesanan")
+    fun pesananBatal(
+        @Header("Authorization") token: String,
+        @Field("lapangan_id") lapangan_id:Int,
+        @Field("tanggal") tanggal: String,
+        @Field("jam[]") jamList:List<String>
+    ): Call<Void>
+
 }
