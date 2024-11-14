@@ -243,6 +243,8 @@ class ProfilActivity : AppCompatActivity() {
                     val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.remove("auth_token")
+                    editor.remove("customer_name")
+                    editor.remove("is_member")
                     editor.apply()
                     val intent = Intent(this@ProfilActivity, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

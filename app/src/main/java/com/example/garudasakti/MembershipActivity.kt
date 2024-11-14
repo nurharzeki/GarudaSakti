@@ -24,6 +24,7 @@ import com.example.garudasakti.midtrans.MidtransConfig
 import com.example.garudasakti.models.DaftarMemberResponse
 import com.example.garudasakti.models.IsiSaldoResponse
 import com.example.garudasakti.models.MemberResponse
+import com.example.garudasakti.models.TransactionStatus
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -137,14 +138,15 @@ class MembershipActivity : AppCompatActivity() {
         btnIsiSaldoMember.setOnClickListener {
             val inputNominal = EditText(this).apply {
                 inputType = InputType.TYPE_CLASS_NUMBER
+                hint = "Masukkan nominal isi saldo (Min : 20000)"
             }
             val dialog = AlertDialog.Builder(this)
-                .setTitle("Pilih nominal isi saldo (Minimal : 50000)")
+                .setTitle("Masukkan nominal isi saldo")
                 .setView(inputNominal)
                 .setPositiveButton("Lanjutkan") { dialog, _ ->
                     val nominal = inputNominal.text.toString().toInt()
-                    if(nominal < 50000){
-                        Toast.makeText(this, "Harap isi nominal minimal 50000", Toast.LENGTH_SHORT).show()
+                    if(nominal < 20000){
+                        Toast.makeText(this, "Harap isi nominal minimal 20000", Toast.LENGTH_SHORT).show()
                     } else {
                         AlertDialog.Builder(this@MembershipActivity).apply {
                             setTitle("Konfirmasi Pengisian Saldo")
@@ -229,62 +231,27 @@ class MembershipActivity : AppCompatActivity() {
             val transactionResult = data?.getParcelableExtra<TransactionResult>(
                 UiKitConstants.KEY_TRANSACTION_RESULT
             )
+            val transactionId = transactionResult?.transactionId
             if (transactionResult != null) {
                 when (transactionResult.status) {
                     STATUS_SUCCESS -> {
-                        AlertDialog.Builder(this@MembershipActivity).apply {
-                            setTitle("Selamat!")
-                            setMessage(
-                                "Pengisian Saldo Berhasil"
-                            )
-                            setPositiveButton("OK") { dialog, _ ->
-                                dialog.dismiss()
-                                val intent = Intent(this@MembershipActivity, MembershipActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
-                            create()
-                            show()
-                        }
+                        showSuccessMessage()
                     }
-                    STATUS_PENDING -> {
-                        AlertDialog.Builder(this@MembershipActivity).apply {
-                            setTitle("Pembayaran Tertunda")
-                            setMessage(
-                                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                tampilkanPembayaranMidtrans(pendingSnapToken)
-                                dialog.dismiss()
+                    STATUS_PENDING, STATUS_CANCELED -> {
+                        if (transactionId != null) {
+                            checkTransactionStatus(transactionId) { transactionStatus ->
+                                if (transactionStatus == "paid" || transactionStatus == "capture" || transactionStatus == "settlement") {
+                                    showSuccessMessage()
+                                } else {
+                                    showPendingOrCanceledMessage()
+                                }
                             }
-                            setNegativeButton("Batalkan Pendaftaran"){ dialog, _ ->
-                                Toast.makeText(this@MembershipActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
+                        } else {
+                            showPendingOrCanceledMessage()
                         }
                     }
                     STATUS_FAILED -> {
                         Toast.makeText(this, "Transaksi Gagal.", Toast.LENGTH_SHORT).show()
-                    }
-                    STATUS_CANCELED -> {
-                        AlertDialog.Builder(this@MembershipActivity).apply {
-                            setTitle("Pembayaran Tertunda")
-                            setMessage(
-                                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                tampilkanPembayaranMidtrans(pendingSnapToken)
-                                dialog.dismiss()
-                            }
-                            setNegativeButton("Batalkan Pendaftaran"){ dialog, _ ->
-                                Toast.makeText(this@MembershipActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
-                        }
                     }
                     STATUS_INVALID -> {
                         Toast.makeText(this, "Transaction Invalid.", Toast.LENGTH_SHORT).show()
@@ -298,5 +265,58 @@ class MembershipActivity : AppCompatActivity() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+    private fun checkTransactionStatus(transactionId: String, callback: (String) -> Unit) {
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+        apiService.checkTransactionStatus(transactionId).enqueue(object : Callback<TransactionStatus> {
+            override fun onResponse(call: Call<TransactionStatus>, response: Response<TransactionStatus>) {
+                if (response.isSuccessful) {
+                    val transactionStatus = response.body()?.transactionStatus ?: "pending"
+                    callback(transactionStatus)
+                } else {
+                    Log.e("Error", "Failed to get transaction status")
+                    callback("pending")
+                }
+            }
+            override fun onFailure(call: Call<TransactionStatus>, t: Throwable) {
+                Log.e("Failure", "Failed to connect to server")
+                callback("pending")
+            }
+        })
+    }
+    private fun showSuccessMessage(){
+        AlertDialog.Builder(this@MembershipActivity).apply {
+            setTitle("Selamat!")
+            setMessage(
+                "Pengisian Saldo Berhasil"
+            )
+            setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this@MembershipActivity, MembershipActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            create()
+            show()
+        }
+    }
+    private fun showPendingOrCanceledMessage(){
+        AlertDialog.Builder(this@MembershipActivity).apply {
+            setTitle("Pembayaran Tertunda")
+            setMessage(
+                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
+            )
+            setPositiveButton("Lanjut Bayar") { dialog, _ ->
+                tampilkanPembayaranMidtrans(pendingSnapToken)
+                dialog.dismiss()
+            }
+            setNegativeButton("Batalkan Isi Saldo"){ dialog, _ ->
+                Toast.makeText(this@MembershipActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
     }
 }
