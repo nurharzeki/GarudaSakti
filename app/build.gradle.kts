@@ -65,7 +65,10 @@ dependencies {
     // Material Components
     implementation("com.google.android.material:material:1.9.0")
 
-    // Midtrans
-    implementation("com.midtrans:uikit:2.0.0-SANDBOX")
+    // Midtrans (SandBox)
+    implementation("com.midtrans:uikit:2.3.0-SANDBOX")
+
+    // Midtrans (Production)
+    // implementation("com.midtrans:uikit:2.3.0")
 
 }

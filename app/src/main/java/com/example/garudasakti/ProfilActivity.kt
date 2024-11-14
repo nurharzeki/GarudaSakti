@@ -29,16 +29,12 @@ import retrofit2.Response
 
 class ProfilActivity : AppCompatActivity() {
     private lateinit var apiInterface: MainInterface
-
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_profil)
@@ -47,56 +43,44 @@ class ProfilActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         apiInterface.getProfil("Bearer $token").enqueue(object : Callback<ProfilResponse> {
             override fun onResponse(call: Call<ProfilResponse>, response: Response<ProfilResponse>) {
                 if (response.isSuccessful) {
                     val profil = response.body()
                     profil?.let {
-                        // Menampilkan data ke dalam view binding
                         val textUsernameProfil = findViewById<EditText>(R.id.textUsernameProfil)
                         textUsernameProfil.setText(it.username)
                         val textNamaProfil = findViewById<EditText>(R.id.textNamaProfil)
                         textNamaProfil.setText(it.name)
                         val textEmailProfil = findViewById<EditText>(R.id.textEmailProfil)
                         textEmailProfil.setText(it.email)
-
                         val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putString("customer_name", it.name)
                         editor.putString("customer_username", it.username)
                         editor.putString("customer_email", it.email)
                         editor.apply()
-
                     }
-//                    Toast.makeText(this@ProfilActivity, "berhasil mendapatkan data profil", Toast.LENGTH_SHORT).show()
-
                 } else {
-//                    Toast.makeText(this@ProfilActivity, "Gagal mendapatkan data profil", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<ProfilResponse>, t: Throwable) {
                 Toast.makeText(this@ProfilActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("error", "Error : ${t.message}")
             }
         })
-
         val buttonUpdateProfil = findViewById<Button>(R.id.buttonEditProfil)
         buttonUpdateProfil.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Update Profil")
-
             val dialogView = layoutInflater.inflate(R.layout.custom_layout_update_profil, null)
             dialogView.findViewById<EditText>(R.id.inputUsernameUpdateProfilCustom).text = findViewById<EditText>(R.id.textUsernameProfil).text
             dialogView.findViewById<EditText>(R.id.inputNamaUpdateProfilCustom).text = findViewById<EditText>(R.id.textNamaProfil).text
             dialogView.findViewById<EditText>(R.id.inputEmailUpdateProfilCustom).text = findViewById<EditText>(R.id.textEmailProfil).text
             builder.setView(dialogView)
-
             val inputUsername = dialogView.findViewById<EditText>(R.id.inputUsernameUpdateProfilCustom)
             val inputNama = dialogView.findViewById<EditText>(R.id.inputNamaUpdateProfilCustom)
             val inputEmail = dialogView.findViewById<EditText>(R.id.inputEmailUpdateProfilCustom)
-
             builder.setPositiveButton("Simpan") { dialog, _ ->
                 val username = inputUsername.text.toString()
                 val name = inputNama.text.toString()
@@ -110,7 +94,6 @@ class ProfilActivity : AppCompatActivity() {
                         "username" to username,
                         "email" to email
                     )
-
                     apiInterface.updateProfil("Bearer $token", profilData).enqueue(object :
                         Callback<UpdateProfilResponse> {
                         override fun onResponse(
@@ -120,7 +103,6 @@ class ProfilActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 response.body()?.let {
                                     if (it.errors == null) {
-                                        // Jika update berhasil
                                         Toast.makeText(this@ProfilActivity, "Berhasil memperbarui profil", Toast.LENGTH_SHORT).show()
                                         val textUsernameProfil = findViewById<EditText>(R.id.textUsernameProfil)
                                         textUsernameProfil.setText(username)
@@ -128,32 +110,26 @@ class ProfilActivity : AppCompatActivity() {
                                         textNamaProfil.setText(name)
                                         val textEmailProfil = findViewById<EditText>(R.id.textEmailProfil)
                                         textEmailProfil.setText(email)
-
                                         val sharedPreferences = this@ProfilActivity.getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
                                         val editor = sharedPreferences.edit()
                                         editor.putString("customer_name", name)
                                         editor.apply()
-
                                     } else {
-                                        // Tampilkan error dari server
                                         it.errors.forEach { (field, errors) ->
                                             Toast.makeText(this@ProfilActivity, errors.joinToString(), Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
                             } else {
-
                                 Toast.makeText(this@ProfilActivity, "Gagal memperbarui profil : ${response.code()}", Toast.LENGTH_SHORT).show()
                                 Log.d("UpdateProfilResponse", response.toString())
                                 Log.d("UpdateProfilBody", response.body().toString())
                             }
                         }
-
                         override fun onFailure(call: Call<UpdateProfilResponse>, t: Throwable) {
                             Toast.makeText(this@ProfilActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                         }
                     })
-
                 } else {
                     Toast.makeText(this, "Harap isi semua input diatas", Toast.LENGTH_SHORT).show()
                 }
@@ -164,19 +140,15 @@ class ProfilActivity : AppCompatActivity() {
             }
             builder.create().show()
         }
-
         val buttonUpdatePassword = findViewById<Button>(R.id.buttonGantiPassword)
         buttonUpdatePassword.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Ganti Password")
-
             val dialogView = layoutInflater.inflate(R.layout.custom_layout_update_password, null)
             builder.setView(dialogView)
-
             val inputCurrentPassword = dialogView.findViewById<EditText>(R.id.inputCurrentPasswordCustom)
             val inputNewPassword = dialogView.findViewById<EditText>(R.id.inputNewPasswordCustom)
             val inputConfirmPassword = dialogView.findViewById<EditText>(R.id.inputConfirmPasswordCustom)
-
             builder.setPositiveButton("Simpan") { dialog, _ ->
                 val current_password = inputCurrentPassword.text.toString()
                 val new_password = inputNewPassword.text.toString()
@@ -190,7 +162,6 @@ class ProfilActivity : AppCompatActivity() {
                             "new_password" to new_password,
                             "confirm_password" to confirm_password
                         )
-
                         apiInterface.updatePassword("Bearer $token", passwordData).enqueue(object :
                             Callback<UpdatePasswordResponse> {
                             override fun onResponse(
@@ -207,7 +178,6 @@ class ProfilActivity : AppCompatActivity() {
                                     Log.d("Error", response.body().toString())
                                 }
                             }
-
                             override fun onFailure(call: Call<UpdatePasswordResponse>, t: Throwable) {
                                 Toast.makeText(this@ProfilActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                             }
@@ -223,7 +193,6 @@ class ProfilActivity : AppCompatActivity() {
             }
             builder.create().show()
         }
-
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
         buttonLogout.setOnClickListener {
             AlertDialog.Builder(this).apply {
@@ -240,7 +209,6 @@ class ProfilActivity : AppCompatActivity() {
                 show()
             }
         }
-
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarProfile)
         bottomNavigationView.selectedItemId = R.id.menuProfil
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -266,38 +234,41 @@ class ProfilActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
     }
-
     private fun logout() {
         apiInterface.logout("Bearer $token").enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-
                     Toast.makeText(this@ProfilActivity, "Berhasil Logout", Toast.LENGTH_SHORT).show()
-
                     val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.remove("auth_token")
                     editor.apply()
-
                     val intent = Intent(this@ProfilActivity, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     finish()
-
                 } else {
-                    // Tangani kasus gagal logout jika perlu
+                    val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.remove("auth_token")
+                    editor.apply()
+                    val intent = Intent(this@ProfilActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
                 }
             }
-
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                // Tangani kegagalan jaringan atau error lainnya
+                val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.remove("auth_token")
+                editor.apply()
+                val intent = Intent(this@ProfilActivity, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
             }
         })
     }
-
-
-
-
 }
