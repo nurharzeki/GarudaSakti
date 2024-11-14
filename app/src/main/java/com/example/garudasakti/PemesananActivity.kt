@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.garudasakti.midtrans.MidtransConfig
 import com.example.garudasakti.models.JamResponse
 import com.example.garudasakti.models.MemberResponse
 import com.example.garudasakti.models.PemesananLangsungRequest
@@ -26,7 +27,6 @@ import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.midtrans.sdk.uikit.api.model.TransactionResult
 import com.midtrans.sdk.corekit.models.snap.TransactionResult.*
@@ -67,13 +67,8 @@ class PemesananActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pemesanan)
-        UiKitApi.Builder()
-            .withMerchantClientKey("SB-Mid-client-oPkm6mdSZxomn5n8")
-            .withContext(applicationContext)
-            .withMerchantUrl("https://4290-223-255-231-152.ngrok-free.app/")
-            .enableLog(true)
-            .build()
-        setLocaleNew("id")
+        val midtrans = MidtransConfig()
+        midtrans.getMidtrans(applicationContext)
         paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result?.resultCode == RESULT_OK) {
                 result.data?.let {
@@ -176,6 +171,7 @@ class PemesananActivity : AppCompatActivity() {
             builder.show()
         }
         selectedJam = ""
+        jamDipilih = mutableListOf()
         var jumlahJamDipilih = 0
         var selectedItemsStatus = BooleanArray(0)
         val selectedJams = mutableListOf<String>()
@@ -185,7 +181,6 @@ class PemesananActivity : AppCompatActivity() {
                 Toast.makeText(this, "Pilih tanggal terlebih dahulu!", Toast.LENGTH_SHORT).show()
             } else {
                 if (jamTersedia.isNotEmpty()) {
-                    jamDipilih = mutableListOf()
                     if (selectedItemsStatus.size != jamTersedia.size) {
                         selectedItemsStatus = BooleanArray(jamTersedia.size) { false }
                     }
@@ -224,11 +219,11 @@ class PemesananActivity : AppCompatActivity() {
             var totalHargaPemesanan = 0
             var totalPoinPemesanan = 0
             val selectedDate = tanggaldipilih
-            val selectedTime = jamDipilih
             namaTim = findViewById<TextInputEditText>(R.id.inputTextNamaTimPemesanan).text.toString()
-            if(selectedDate.isEmpty() || selectedTime.isEmpty() || namaTim.isEmpty()){
+            if(selectedDate.isEmpty() || jamDipilih.isEmpty() || namaTim.isEmpty()){
                 Toast.makeText(this, "Masukkan nama tim, tanggal, dan jam terlebih dahulu!", Toast.LENGTH_SHORT).show()
             } else {
+                val selectedTime = jamDipilih
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle("Pilih Metode Pembayaran")
                 builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Penukaran Poin")) { dialog, which ->
@@ -725,9 +720,5 @@ class PemesananActivity : AppCompatActivity() {
             paymentLauncher,
             snapToken
         )
-    }
-    fun setLocaleNew(languageCode: String?) {
-        val locales = LocaleListCompat.forLanguageTags(languageCode)
-        AppCompatDelegate.setApplicationLocales(locales)
     }
 }

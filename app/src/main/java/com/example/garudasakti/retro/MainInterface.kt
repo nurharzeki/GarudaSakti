@@ -1,6 +1,8 @@
 package com.example.garudasakti.retro
 
 import com.example.garudasakti.ApiModels.Authentication.LoginResponse
+import com.example.garudasakti.models.DaftarMemberResponse
+import com.example.garudasakti.models.IsiSaldoResponse
 import com.example.garudasakti.models.JamResponse
 import com.example.garudasakti.models.KetentuanMembershipResponse
 import com.example.garudasakti.models.LapanganHome
@@ -126,5 +128,19 @@ interface MainInterface {
         @Field("tanggal") tanggal: String,
         @Field("jam[]") jamList:List<String>
     ): Call<Void>
+
+    @FormUrlEncoded
+    @POST("daftar-member")
+    fun daftarMember(
+        @Header("Authorization") token: String,
+        @Field("saldoDaftar") saldoDaftar: Int
+    ): Call<DaftarMemberResponse>
+
+    @FormUrlEncoded
+    @POST("isi-saldo")
+    fun isiSaldo(
+        @Header("Authorization") token: String,
+        @Field("nominal") nominal: Int
+    ): Call<IsiSaldoResponse>
 
 }

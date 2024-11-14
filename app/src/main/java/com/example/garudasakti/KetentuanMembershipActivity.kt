@@ -38,9 +38,6 @@ class KetentuanMembershipActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        // NAVBAR
-        //navBar untuk setiap halaman
         val bottomNavigationView = findViewById<BottomNavigationView>(navBarMembership)
         bottomNavigationView.selectedItemId = R.id.menuMembership
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -56,6 +53,8 @@ class KetentuanMembershipActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menuMembership -> {
+                    val intent = Intent(this, MembershipActivity::class.java)
+                    startActivity(intent)
                     true
                 }
                 R.id.menuProfil -> {
@@ -66,27 +65,16 @@ class KetentuanMembershipActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-        // Inisialisasi RecyclerView
         recyclerView = findViewById(R.id.rvKetentuanMembership)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Inisialisasi adapter dan set adapter ke RecyclerView
         ketentuanMembershipList = ArrayList()
         ketentuanMembershipAdapter = KetentuanMembershipAdapter(ketentuanMembershipList)
         recyclerView.adapter = ketentuanMembershipAdapter
-
         fetchKetentuanMembership()
-
-
-
     }
-
     private fun fetchKetentuanMembership() {
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
-
-        // Lakukan request ke API
         val call = apiService.getKetentuanMembership("Bearer $token")
         call.enqueue(object : Callback<List<KetentuanMembershipResponse>> {
             override fun onResponse(
@@ -94,7 +82,6 @@ class KetentuanMembershipActivity : AppCompatActivity() {
                 response: Response<List<KetentuanMembershipResponse>>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    // Jika respons berhasil, isi data ke adapter
                     ketentuanMembershipList.clear()
                     ketentuanMembershipList.addAll(response.body()!!)
                     ketentuanMembershipAdapter.notifyDataSetChanged()
@@ -102,7 +89,6 @@ class KetentuanMembershipActivity : AppCompatActivity() {
                     Toast.makeText(this@KetentuanMembershipActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<List<KetentuanMembershipResponse>>, t: Throwable) {
                 Toast.makeText(this@KetentuanMembershipActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }

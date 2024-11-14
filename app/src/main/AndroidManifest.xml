@@ -17,13 +17,14 @@
         android:theme="@style/Theme.GarudaSakti"
         tools:targetApi="31">
         <activity
+            android:name=".IsiSaldoPendaftaranActivity"
+            android:exported="false" />
+        <activity
             android:name=".KetentuanMembershipActivity"
             android:exported="false" />
         <activity
             android:name=".PesananBerhasilActivity"
             android:exported="false" />
-        <activity
-            android:name=".midtrans.PaymentMidtrans"/>
         <activity
             android:name=".PembayaranActivity"
             android:exported="false" />
