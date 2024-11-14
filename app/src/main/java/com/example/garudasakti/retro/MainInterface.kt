@@ -16,6 +16,7 @@ import com.example.garudasakti.models.ProfilResponse
 import com.example.garudasakti.models.RegisterRequest
 import com.example.garudasakti.models.RegisterResponse
 import com.example.garudasakti.models.TanggalResponse
+import com.example.garudasakti.models.TransactionStatus
 import com.example.garudasakti.models.UpdatePasswordResponse
 import com.example.garudasakti.models.UpdateProfilResponse
 import okhttp3.ResponseBody
@@ -142,5 +143,11 @@ interface MainInterface {
         @Header("Authorization") token: String,
         @Field("nominal") nominal: Int
     ): Call<IsiSaldoResponse>
+
+    @FormUrlEncoded
+    @POST("check-transaction-status")
+    fun checkTransactionStatus(
+        @Field("transaction_id") transaction_id : String
+    ): Call<TransactionStatus>
 
 }

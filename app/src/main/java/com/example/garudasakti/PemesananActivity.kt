@@ -24,6 +24,7 @@ import com.example.garudasakti.models.PemesananLangsungResponse
 import com.example.garudasakti.models.PemesananPoinResponse
 import com.example.garudasakti.models.PemesananSaldoResponse
 import com.example.garudasakti.models.TanggalResponse
+import com.example.garudasakti.models.TransactionStatus
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -40,9 +41,10 @@ class PemesananActivity : AppCompatActivity() {
     private val token: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "") ?: ""
     }
-    private val is_member: Int by lazy {
+    private val isMember: Int by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("is_member", 0)
     }
+    private var is_member by Delegates.notNull<Int>()
     private var saldo by Delegates.notNull<Int>()
     private var poin by Delegates.notNull<Int>()
     private lateinit var tvSelectedDate: TextView
@@ -88,6 +90,7 @@ class PemesananActivity : AppCompatActivity() {
             lapanganName = lapanganNama
         }
         val token = token
+        is_member = isMember
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
         apiService.getMemberData("Bearer $token").enqueue(object : Callback<MemberResponse> {
@@ -96,10 +99,12 @@ class PemesananActivity : AppCompatActivity() {
                     if (response.body()?.membership_status == 1){
                         val member = response.body()!!.data
                         if (member != null) {
+                            is_member = 1
                             saldo = member.saldo
                             poin = member.poin
                         }
                     } else {
+                        is_member = 0
                         saldo = 0
                         poin = 0
                     }
@@ -204,6 +209,8 @@ class PemesananActivity : AppCompatActivity() {
                             jamDipilih = selectedJams.map { it.split(" - ")[0] }
                             dialog.dismiss()
                         } else {
+                            jamDipilih = selectedJams.map { it.split(" - ")[0] }
+                            dialog.dismiss()
                             tvSelectedTime.text = "belum dipilih"
                             Toast.makeText(this, "Pilih setidaknya satu jam!", Toast.LENGTH_SHORT).show()
                         }
@@ -569,136 +576,28 @@ class PemesananActivity : AppCompatActivity() {
             val transactionResult = data?.getParcelableExtra<TransactionResult>(
                 UiKitConstants.KEY_TRANSACTION_RESULT
             )
+            val transactionId = transactionResult?.transactionId
+            Log.e("TransactionID", transactionId.toString())
             if (transactionResult != null) {
                 when (transactionResult.status) {
                     STATUS_SUCCESS -> {
-                        val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
-                        sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
-                        if(is_member == 1){
-                            var pointForAlertShow = poin + qtyJamDipilih
-                            AlertDialog.Builder(this@PemesananActivity).apply {
-                                setTitle("Selamat!")
-                                setMessage(
-                                    "Pesanan Anda berhasil dibuat.\n" +
-                                            "Anda mendapatkan $qtyJamDipilih poin.\n\n" +
-                                            "Poin Anda saat ini\t: $pointForAlertShow\n\n"
-                                )
-                                setPositiveButton("OK") { dialog, _ ->
-                                    dialog.dismiss()
-                                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
-                                    intent.putExtra("nama_tim", namaTim)
-                                    intent.putExtra("lapangan_name", lapanganName)
-                                    intent.putExtra("tanggal", tanggaldipilih)
-                                    intent.putExtra("jam", selectedJam)
-                                    startActivity(intent)
-                                    finish()
+                        showSuccessMessage()
+                    }
+                    STATUS_PENDING, STATUS_CANCELED -> {
+                        if (transactionId != null) {
+                            checkTransactionStatus(transactionId) { transactionStatus ->
+                                if (transactionStatus == "paid" || transactionStatus == "capture" || transactionStatus == "settlement") {
+                                    showSuccessMessage()
+                                } else {
+                                    showPendingOrCanceledMessage()
                                 }
-                                create()
-                                show()
                             }
                         } else {
-                            AlertDialog.Builder(this@PemesananActivity).apply {
-                                setTitle("Selamat!")
-                                setMessage(
-                                    "Pesanan Anda berhasil dibuat.\n"
-                                )
-                                setPositiveButton("OK") { dialog, _ ->
-                                    dialog.dismiss()
-                                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
-                                    intent.putExtra("nama_tim", namaTim)
-                                    intent.putExtra("lapangan_name", lapanganName)
-                                    intent.putExtra("tanggal", tanggaldipilih)
-                                    intent.putExtra("jam", selectedJam)
-                                    startActivity(intent)
-                                    finish()
-                                }
-                                create()
-                                show()
-                            }
-                        }
-                    }
-                    STATUS_PENDING -> {
-                        AlertDialog.Builder(this@PemesananActivity).apply {
-                            setTitle("Pesanan Tertunda")
-                            setMessage(
-                                "Ada pembayaran Anda yang tertunda. Segera lakukan pembayaran sebelum pembayarannya kadaluwarsa. \n" +
-                                "Lanjut bayar sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                pendingSnapToken?.let { snapToken ->
-                                    tampilkanPembayaranMidtrans(snapToken)
-                                }
-                                dialog.dismiss()
-                            }
-                            setNegativeButton("Batalkan Pesanan") { dialog, _ ->
-                                val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
-                                sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
-                                val retrofit = RetrofitConfig().getRetrofitClientInstance()
-                                val apiService = retrofit.create(MainInterface::class.java)
-                                apiService.pesananBatal("Bearer $token", lapanganID, tanggaldipilih, jamDipilih).enqueue(object : Callback<Void> {
-                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                        if (response.isSuccessful) {
-                                            Toast.makeText(this@PemesananActivity, "Transaksi Dibatalkan.", Toast.LENGTH_LONG).show()
-                                        } else {
-                                            Log.e("error response batalkan pesanan", response.body().toString())
-                                        }
-                                    }
-                                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                                        t.message?.let {
-                                            Log.e("failure response batalkan pesanan",
-                                                it
-                                            )
-                                        }
-                                    }
-                                })
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
+                            showPendingOrCanceledMessage()
                         }
                     }
                     STATUS_FAILED -> {
                         Toast.makeText(this, "Transaksi Gagal.", Toast.LENGTH_SHORT).show()
-                    }
-                    STATUS_CANCELED -> {
-                        AlertDialog.Builder(this@PemesananActivity).apply {
-                            setTitle("Pesanan Tertunda")
-                            setMessage(
-                                "Ada pembayaran Anda yang tertunda. Segera lakukan pembayaran sebelum pembayarannya kadaluwarsa. \n" +
-                                        "Lanjut bayar sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                pendingSnapToken?.let { snapToken ->
-                                    tampilkanPembayaranMidtrans(snapToken)
-                                }
-                                dialog.dismiss()
-                            }
-                            setNegativeButton("Batalkan Pesanan") { dialog, _ ->
-                                val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
-                                sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
-                                val retrofit = RetrofitConfig().getRetrofitClientInstance()
-                                val apiService = retrofit.create(MainInterface::class.java)
-                                apiService.pesananBatal("Bearer $token", lapanganID, tanggaldipilih, jamDipilih).enqueue(object : Callback<Void> {
-                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                                        if (response.isSuccessful) {
-                                            Toast.makeText(this@PemesananActivity, "Transaksi Dibatalkan.", Toast.LENGTH_LONG).show()
-                                        } else {
-                                            Log.e("error response batalkan pesanan", response.body().toString())
-                                        }
-                                    }
-                                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                                        t.message?.let {
-                                            Log.e("failure response batalkan pesanan",
-                                                it
-                                            )
-                                        }
-                                    }
-                                })
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
-                        }
                     }
                     STATUS_INVALID -> {
                         Toast.makeText(this, "Transaction Invalid.", Toast.LENGTH_SHORT).show()
@@ -721,4 +620,110 @@ class PemesananActivity : AppCompatActivity() {
             snapToken
         )
     }
+    private fun checkTransactionStatus(transactionId: String, callback: (String) -> Unit) {
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+        apiService.checkTransactionStatus(transactionId).enqueue(object : Callback<TransactionStatus> {
+            override fun onResponse(call: Call<TransactionStatus>, response: Response<TransactionStatus>) {
+                if (response.isSuccessful) {
+                    val transactionStatus = response.body()?.transactionStatus ?: "pending"
+                    callback(transactionStatus)
+                } else {
+                    Log.e("Error", "Failed to get transaction status")
+                    callback("pending")
+                }
+            }
+            override fun onFailure(call: Call<TransactionStatus>, t: Throwable) {
+                Log.e("Failure", "Failed to connect to server")
+                callback("pending")
+            }
+        })
+    }
+    private fun showSuccessMessage(){
+        val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+        sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
+        if(is_member == 1){
+            var pointForAlertShow = poin + qtyJamDipilih
+            AlertDialog.Builder(this@PemesananActivity).apply {
+                setTitle("Selamat!")
+                setMessage(
+                    "Pesanan Anda berhasil dibuat.\n" +
+                            "Anda mendapatkan $qtyJamDipilih poin.\n\n" +
+                            "Poin Anda saat ini\t: $pointForAlertShow\n\n"
+                )
+                setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                    intent.putExtra("nama_tim", namaTim)
+                    intent.putExtra("lapangan_name", lapanganName)
+                    intent.putExtra("tanggal", tanggaldipilih)
+                    intent.putExtra("jam", selectedJam)
+                    startActivity(intent)
+                    finish()
+                }
+                create()
+                show()
+            }
+        } else {
+            AlertDialog.Builder(this@PemesananActivity).apply {
+                setTitle("Selamat!")
+                setMessage(
+                    "Pesanan Anda berhasil dibuat.\n"
+                )
+                setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    val intent = Intent(this@PemesananActivity, PesananBerhasilActivity::class.java)
+                    intent.putExtra("nama_tim", namaTim)
+                    intent.putExtra("lapangan_name", lapanganName)
+                    intent.putExtra("tanggal", tanggaldipilih)
+                    intent.putExtra("jam", selectedJam)
+                    startActivity(intent)
+                    finish()
+                }
+                create()
+                show()
+            }
+        }
+    }
+    private fun showPendingOrCanceledMessage(){
+        AlertDialog.Builder(this@PemesananActivity).apply {
+            setTitle("Pesanan Tertunda")
+            setMessage(
+                "Ada pembayaran Anda yang tertunda. Segera lakukan pembayaran sebelum pembayarannya kadaluwarsa. \n" +
+                        "Lanjut bayar sekarang?"
+            )
+            setPositiveButton("Lanjut Bayar") { dialog, _ ->
+                pendingSnapToken?.let { snapToken ->
+                    tampilkanPembayaranMidtrans(snapToken)
+                }
+                dialog.dismiss()
+            }
+            setNegativeButton("Batalkan Pesanan") { dialog, _ ->
+                val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
+                sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
+                val retrofit = RetrofitConfig().getRetrofitClientInstance()
+                val apiService = retrofit.create(MainInterface::class.java)
+                apiService.pesananBatal("Bearer $token", lapanganID, tanggaldipilih, jamDipilih).enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@PemesananActivity, "Transaksi Dibatalkan.", Toast.LENGTH_LONG).show()
+                        } else {
+                            Log.e("error response batalkan pesanan", response.body().toString())
+                        }
+                    }
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        t.message?.let {
+                            Log.e("failure response batalkan pesanan",
+                                it
+                            )
+                        }
+                    }
+                })
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
+    }
+
 }

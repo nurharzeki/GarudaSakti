@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.garudasakti.midtrans.MidtransConfig
 import com.example.garudasakti.models.DaftarMemberResponse
 import com.example.garudasakti.models.PemesananLangsungResponse
+import com.example.garudasakti.models.TransactionStatus
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.midtrans.sdk.corekit.models.snap.TransactionResult.STATUS_FAILED
@@ -63,8 +64,8 @@ class IsiSaldoPendaftaranActivity : AppCompatActivity() {
         val btnIsiSaldoDaftar = findViewById<Button>(R.id.buttonIsiSaldoPendaftaranMember)
         btnIsiSaldoDaftar.setOnClickListener {
             nominalIsiSaldo = findViewById<EditText>(R.id.inputSaldoPendaftaranMembership).text.toString().toIntOrNull() ?: 0
-            if (nominalIsiSaldo < 50000) {
-                Toast.makeText(this, "Harap isi saldo minimal 50000", Toast.LENGTH_SHORT).show()
+            if (nominalIsiSaldo < 20000) {
+                Toast.makeText(this, "Harap isi saldo minimal 20000", Toast.LENGTH_SHORT).show()
             } else {
                 AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
                     setTitle("Konfirmasi Pengisian Saldo")
@@ -117,67 +118,27 @@ class IsiSaldoPendaftaranActivity : AppCompatActivity() {
             val transactionResult = data?.getParcelableExtra<TransactionResult>(
                 UiKitConstants.KEY_TRANSACTION_RESULT
             )
+            val transactionId = transactionResult?.transactionId
             if (transactionResult != null) {
                 when (transactionResult.status) {
                     STATUS_SUCCESS -> {
-                        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.putInt("is_member", 1)
-                        editor.apply()
-                        AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
-                            setTitle("Selamat!")
-                            setMessage(
-                                "Pendaftaran membership Anda berhasil!\n\n" +
-                                "Anda mendapatkan 5 poin."
-                            )
-                            setPositiveButton("OK") { dialog, _ ->
-                                dialog.dismiss()
-                                val intent = Intent(this@IsiSaldoPendaftaranActivity, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
-                            create()
-                            show()
-                        }
+                        showSuccessMessage()
                     }
-                    STATUS_PENDING -> {
-                        AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
-                            setTitle("Pembayaran Tertunda")
-                            setMessage(
-                                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                tampilkanPembayaranMidtrans(pendingSnapToken)
-                                dialog.dismiss()
+                    STATUS_PENDING, STATUS_CANCELED -> {
+                        if (transactionId != null) {
+                            checkTransactionStatus(transactionId) { transactionStatus ->
+                                if (transactionStatus == "paid" || transactionStatus == "capture" || transactionStatus == "settlement") {
+                                    showSuccessMessage()
+                                } else {
+                                    showPendingOrCanceledMessage()
+                                }
                             }
-                            setNegativeButton("Batalkan Pendaftaran"){ dialog, _ ->
-                                Toast.makeText(this@IsiSaldoPendaftaranActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
+                        } else {
+                            showPendingOrCanceledMessage()
                         }
                     }
                     STATUS_FAILED -> {
                         Toast.makeText(this, "Transaksi Gagal.", Toast.LENGTH_SHORT).show()
-                    }
-                    STATUS_CANCELED -> {
-                        AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
-                            setTitle("Pembayaran Tertunda")
-                            setMessage(
-                                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
-                            )
-                            setPositiveButton("Lanjut Bayar") { dialog, _ ->
-                                tampilkanPembayaranMidtrans(pendingSnapToken)
-                                dialog.dismiss()
-                            }
-                            setNegativeButton("Batalkan Pendaftaran"){ dialog, _ ->
-                                Toast.makeText(this@IsiSaldoPendaftaranActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
-                                dialog.dismiss()
-                            }
-                            create()
-                            show()
-                        }
                     }
                     STATUS_INVALID -> {
                         Toast.makeText(this, "Transaction Invalid.", Toast.LENGTH_SHORT).show()
@@ -191,5 +152,63 @@ class IsiSaldoPendaftaranActivity : AppCompatActivity() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+    private fun checkTransactionStatus(transactionId: String, callback: (String) -> Unit) {
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+        apiService.checkTransactionStatus(transactionId).enqueue(object : Callback<TransactionStatus> {
+            override fun onResponse(call: Call<TransactionStatus>, response: Response<TransactionStatus>) {
+                if (response.isSuccessful) {
+                    val transactionStatus = response.body()?.transactionStatus ?: "pending"
+                    callback(transactionStatus)
+                } else {
+                    Log.e("Error", "Failed to get transaction status")
+                    callback("pending")
+                }
+            }
+            override fun onFailure(call: Call<TransactionStatus>, t: Throwable) {
+                Log.e("Failure", "Failed to connect to server")
+                callback("pending")
+            }
+        })
+    }
+    private fun showSuccessMessage(){
+        val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt("is_member", 1)
+        editor.apply()
+        AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
+            setTitle("Selamat!")
+            setMessage(
+                "Pendaftaran membership Anda berhasil!\n\n" +
+                        "Anda mendapatkan 5 poin."
+            )
+            setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this@IsiSaldoPendaftaranActivity, MembershipActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            create()
+            show()
+        }
+    }
+    private fun showPendingOrCanceledMessage(){
+        AlertDialog.Builder(this@IsiSaldoPendaftaranActivity).apply {
+            setTitle("Pembayaran Tertunda")
+            setMessage(
+                "Pembayaran Anda belum selesai, lanjutkan sekarang?"
+            )
+            setPositiveButton("Lanjut Bayar") { dialog, _ ->
+                tampilkanPembayaranMidtrans(pendingSnapToken)
+                dialog.dismiss()
+            }
+            setNegativeButton("Batalkan Pendaftaran"){ dialog, _ ->
+                Toast.makeText(this@IsiSaldoPendaftaranActivity, "Pendaftaran dibatalkan", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
     }
 }

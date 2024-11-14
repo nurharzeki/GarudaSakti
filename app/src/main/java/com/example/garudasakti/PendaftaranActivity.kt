@@ -19,16 +19,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class PendaftaranActivity : AppCompatActivity() {
-
     val retrofit = RetrofitConfig().getRetrofitClientInstance()
     val apiService = retrofit.create(MainInterface::class.java)
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
-
-
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pendaftaran)
@@ -37,27 +30,17 @@ class PendaftaranActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-
         val buttonDaftar = findViewById<Button>(R.id.buttonDaftarPendaftaran)
         buttonDaftar.setOnClickListener {
             registerUser()
         }
-
-
-
-
-
     }
-
-
     private fun registerUser() {
         val username = findViewById<TextInputEditText>(R.id.editUsernamePendaftaran).text.toString()
         val name = findViewById<TextInputEditText>(R.id.editNamaLengkapPendaftaran).text.toString()
         val email = findViewById<TextInputEditText>(R.id.editEmailPendaftaran).text.toString()
         val password = findViewById<TextInputEditText>(R.id.editPasswordPendaftaran).text.toString()
         val password_confirmation = findViewById<TextInputEditText>(R.id.editRetypePasswordPendaftaran).text.toString()
-
         val registerRequest = RegisterRequest(username, name, email, password, password_confirmation)
         apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
@@ -70,6 +53,7 @@ class PendaftaranActivity : AppCompatActivity() {
                     val editor = sharedPreferences.edit()
                     editor.putString("auth_token", token)
                     editor.putString("customer_name", userName)
+                    editor.putInt("is_member", 0)
                     editor.apply()
                     val intent = Intent(this@PendaftaranActivity, PendaftaranBerhasilActivity::class.java)
                     startActivity(intent)
@@ -79,16 +63,12 @@ class PendaftaranActivity : AppCompatActivity() {
                     handleErrorResponse(errorResponse)
                 }
             }
-
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 Toast.makeText(this@PendaftaranActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
             }
         })
     }
-
-
     private fun handleErrorResponse(errorBody: String?) {
-        // Parsing error untuk menangani "username/email sudah diambil"
         errorBody?.let {
             try {
                 val jsonObject = JSONObject(it)
@@ -112,8 +92,4 @@ class PendaftaranActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
-
 }
