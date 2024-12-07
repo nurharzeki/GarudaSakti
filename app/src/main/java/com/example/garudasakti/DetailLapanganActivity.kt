@@ -84,4 +84,14 @@ class DetailLapanganActivity : AppCompatActivity() {
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarDetailLapangan)
+        when (this) {
+            is DetailLapanganActivity -> bottomNavigationView.selectedItemId = R.id.menuHome
+        }
+    }
+
+
 }

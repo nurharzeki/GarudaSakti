@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textHeaderPemesanan">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="403dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView

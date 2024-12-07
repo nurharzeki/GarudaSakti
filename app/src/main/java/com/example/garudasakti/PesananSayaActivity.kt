@@ -3,6 +3,8 @@ package com.example.garudasakti
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -83,6 +85,20 @@ class PesananSayaActivity : AppCompatActivity() {
 
         fetchPesananSaya()
 
+        val btnPesananMendatang = findViewById<Button>(R.id.buttonPesananMendatangPesananSaya)
+        btnPesananMendatang.setOnClickListener {
+            val textHeader = findViewById<TextView>(R.id.textHeaderRecyclerViewPesananSaya)
+            textHeader.text = "Pesanan Mendatang"
+            fetchPesananSaya()
+        }
+
+        val btnRiwayatPesanan = findViewById<Button>(R.id.buttonRiwayatPesananPesananSaya)
+        btnRiwayatPesanan.setOnClickListener {
+            val textHeader = findViewById<TextView>(R.id.textHeaderRecyclerViewPesananSaya)
+            textHeader.text = "Riwayat Pesanan"
+            fetchRiwayatPesananSaya()
+        }
+
         // Set listener untuk item klik
         pesananSayaAdapter.setOnClickListener(object : PesananSayaAdapter.clickListener {
             override fun onItemClick(position: Int) {
@@ -95,13 +111,50 @@ class PesananSayaActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarPesananSaya)
+        when (this) {
+            is PesananSayaActivity -> bottomNavigationView.selectedItemId = R.id.menuPesananSaya
+        }
+    }
+
+
 
     private fun fetchPesananSaya() {
-        val token = token  // Ganti dengan token yang valid dari login
+        val token = token
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
 
         val call = apiService.getPesananSaya("Bearer $token")
+        call.enqueue(object : Callback<List<PesananSaya>> {
+            override fun onResponse(call: Call<List<PesananSaya>>, response: Response<List<PesananSaya>>) {
+                if (response.isSuccessful) {
+                    // Berhasil mendapatkan respons dari API
+                    val pesananList = response.body()
+                    if (pesananList != null) {
+                        pesananSayaList.clear()
+                        pesananSayaList.addAll(pesananList)
+                        pesananSayaAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Toast.makeText(this@PesananSayaActivity, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<PesananSaya>>, t: Throwable) {
+                Log.e("PesananSayaActivity", "Error: ${t.message}")
+                Toast.makeText(this@PesananSayaActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun fetchRiwayatPesananSaya() {
+        val token = token
+        val retrofit = RetrofitConfig().getRetrofitClientInstance()
+        val apiService = retrofit.create(MainInterface::class.java)
+
+        val call = apiService.getRiwayatPesananSaya("Bearer $token")
         call.enqueue(object : Callback<List<PesananSaya>> {
             override fun onResponse(call: Call<List<PesananSaya>>, response: Response<List<PesananSaya>>) {
                 if (response.isSuccessful) {

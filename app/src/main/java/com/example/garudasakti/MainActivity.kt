@@ -31,27 +31,20 @@ class MainActivity : AppCompatActivity() {
     private val customer_name: String by lazy {
         getSharedPreferences("user_prefs", MODE_PRIVATE).getString("customer_name", "") ?: ""
     }
-
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
-
         if(token == null){
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-
         val textCustomerName: TextView = findViewById(R.id.textNamaCustomerHome)
-
         textCustomerName.text = customer_name
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -133,6 +126,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarHome)
+        when (this) {
+            is MainActivity -> bottomNavigationView.selectedItemId = R.id.menuHome
+        }
+    }
+
 
     private fun fetchLapanganList() {
         val call = apiInterface.getLapanganList("Bearer $token")
