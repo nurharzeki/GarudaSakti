@@ -101,10 +101,12 @@ class MembershipActivity : AppCompatActivity() {
         buttonKetentuanMembershipNonMember.setOnClickListener {
             val intent = Intent(this, KetentuanMembershipActivity::class.java)
             startActivity(intent)
+
         }
         buttonKetentuanMembershipMember.setOnClickListener {
             val intent = Intent(this, KetentuanMembershipActivity::class.java)
             startActivity(intent)
+
         }
         val layoutMember = findViewById<ConstraintLayout>(R.id.layoutMember)
         val layoutNonMember = findViewById<ConstraintLayout>(R.id.layoutNonMember)
@@ -193,6 +195,16 @@ class MembershipActivity : AppCompatActivity() {
             dialog.show()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarMembership)
+        when (this) {
+            is MembershipActivity -> bottomNavigationView.selectedItemId = R.id.menuMembership
+        }
+    }
+
+
     private fun fetchMemberData(layoutMember: ConstraintLayout, layoutNonMember: ConstraintLayout) {
         apiInterface.getMemberData("Bearer $token").enqueue(object : Callback<MemberResponse> {
             override fun onResponse(call: Call<MemberResponse>, response: Response<MemberResponse>) {
@@ -219,6 +231,7 @@ class MembershipActivity : AppCompatActivity() {
             }
         })
     }
+
     fun tampilkanPembayaranMidtrans(snapToken: String) {
         UiKitApi.getDefaultInstance().startPaymentUiFlow(
             this@MembershipActivity,
@@ -226,6 +239,7 @@ class MembershipActivity : AppCompatActivity() {
             snapToken
         )
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == RESULT_OK) {
             val transactionResult = data?.getParcelableExtra<TransactionResult>(
@@ -266,6 +280,7 @@ class MembershipActivity : AppCompatActivity() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
     private fun checkTransactionStatus(transactionId: String, callback: (String) -> Unit) {
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
@@ -285,6 +300,7 @@ class MembershipActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun showSuccessMessage(){
         AlertDialog.Builder(this@MembershipActivity).apply {
             setTitle("Selamat!")
@@ -301,6 +317,7 @@ class MembershipActivity : AppCompatActivity() {
             show()
         }
     }
+
     private fun showPendingOrCanceledMessage(){
         AlertDialog.Builder(this@MembershipActivity).apply {
             setTitle("Pembayaran Tertunda")

@@ -72,6 +72,9 @@ class KetentuanMembershipActivity : AppCompatActivity() {
         recyclerView.adapter = ketentuanMembershipAdapter
         fetchKetentuanMembership()
     }
+
+
+
     private fun fetchKetentuanMembership() {
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)

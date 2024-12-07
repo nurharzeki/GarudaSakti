@@ -52,6 +52,11 @@ interface MainInterface {
         @Header("Authorization") token: String
     ): Call<List<PesananSaya>>
 
+    @GET("riwayat-pesanan-saya")
+    fun getRiwayatPesananSaya(
+        @Header("Authorization") token: String
+    ): Call<List<PesananSaya>>
+
     @POST("register")
     fun registerUser(
         @Body request: RegisterRequest

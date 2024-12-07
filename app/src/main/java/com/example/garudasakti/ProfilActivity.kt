@@ -235,6 +235,16 @@ class ProfilActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarProfile)
+        when (this) {
+            is ProfilActivity -> bottomNavigationView.selectedItemId = R.id.menuProfil
+        }
+    }
+
+
     private fun logout() {
         apiInterface.logout("Bearer $token").enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {

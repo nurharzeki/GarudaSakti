@@ -571,6 +571,15 @@ class PemesananActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navBarPemesanan)
+        when (this) {
+            is PemesananActivity -> bottomNavigationView.selectedItemId = R.id.menuHome
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == RESULT_OK) {
             val transactionResult = data?.getParcelableExtra<TransactionResult>(
@@ -612,6 +621,7 @@ class PemesananActivity : AppCompatActivity() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
     fun tampilkanPembayaranMidtrans(snapToken: String) {
         pendingSnapToken = snapToken
         UiKitApi.getDefaultInstance().startPaymentUiFlow(
@@ -620,6 +630,7 @@ class PemesananActivity : AppCompatActivity() {
             snapToken
         )
     }
+
     private fun checkTransactionStatus(transactionId: String, callback: (String) -> Unit) {
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         val apiService = retrofit.create(MainInterface::class.java)
@@ -639,6 +650,7 @@ class PemesananActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun showSuccessMessage(){
         val sharedPreferences = getSharedPreferences("PendingTransactions", MODE_PRIVATE)
         sharedPreferences.edit().remove("pendingSnapToken").remove("expiryTime").apply()
@@ -685,6 +697,7 @@ class PemesananActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun showPendingOrCanceledMessage(){
         AlertDialog.Builder(this@PemesananActivity).apply {
             setTitle("Pesanan Tertunda")
