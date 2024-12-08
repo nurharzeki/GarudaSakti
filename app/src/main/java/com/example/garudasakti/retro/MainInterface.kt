@@ -15,10 +15,13 @@ import com.example.garudasakti.models.PesananSaya
 import com.example.garudasakti.models.ProfilResponse
 import com.example.garudasakti.models.RegisterRequest
 import com.example.garudasakti.models.RegisterResponse
+import com.example.garudasakti.models.ResetPasswordResponse
 import com.example.garudasakti.models.TanggalResponse
 import com.example.garudasakti.models.TransactionStatus
 import com.example.garudasakti.models.UpdatePasswordResponse
 import com.example.garudasakti.models.UpdateProfilResponse
+import com.example.garudasakti.models.VerifyEmailPasswordResponse
+import com.example.garudasakti.models.VerifyResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -60,6 +63,16 @@ interface MainInterface {
     @POST("register")
     fun registerUser(
         @Body request: RegisterRequest
+    ): Call<VerifyResponse>
+
+    @FormUrlEncoded
+    @POST("verify-email")
+    fun verifyEmail(
+        @Field("email") email: String,
+        @Field("name") name: String,
+        @Field("username") username: String,
+        @Field("password") password: String,
+        @Field("verification_code") verification_code: Int
     ): Call<RegisterResponse>
 
     @GET("member")
@@ -154,5 +167,26 @@ interface MainInterface {
     fun checkTransactionStatus(
         @Field("transaction_id") transaction_id : String
     ): Call<TransactionStatus>
+
+    @FormUrlEncoded
+    @POST("lupa-password")
+    fun lupaPassword(
+        @Field("email") email: String
+    ): Call<VerifyResponse>
+
+    @FormUrlEncoded
+    @POST("verify-email-password")
+    fun verifyEmailPassword(
+        @Field("email") email: String,
+        @Field("verification_code") verification_code: Int
+    ): Call<VerifyEmailPasswordResponse>
+
+    @FormUrlEncoded
+    @POST("reset-password")
+    fun resetPassword(
+        @Field("email") email: String,
+        @Field("new_password") new_password: String,
+        @Field("confirm_password") confirm_password: String
+    ): Call<ResetPasswordResponse>
 
 }

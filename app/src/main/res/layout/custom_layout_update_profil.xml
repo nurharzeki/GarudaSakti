@@ -64,6 +64,7 @@
             android:inputType="textEmailAddress"
             android:fontFamily="@font/ar_one_sans"
             android:hint="Masukkan Email"
+            android:enabled="false"
             android:paddingStart="24dp"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -12,7 +12,7 @@
         android:id="@+id/mainLogoLogin"
         android:layout_width="144dp"
         android:layout_height="144dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         app:cardBackgroundColor="#DEF0F8FF"
         app:cardCornerRadius="32dp"
         app:layout_constraintBottom_toTopOf="@+id/textLogoLogin"
@@ -67,7 +67,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:boxCornerRadiusBottomEnd="24dp"
                 app:boxCornerRadiusBottomStart="24dp"
@@ -138,7 +138,7 @@
                 android:id="@+id/daftarLoginText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="32dp"
                 android:fontFamily="@font/ar_one_sans"
                 android:text="Belum Punya Akun?"
                 android:textColor="#00001E"
@@ -146,7 +146,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/buttonLoginLogin" />
+                app:layout_constraintTop_toBottomOf="@+id/textLupaPasswordLogin" />
 
             <Button
                 android:id="@+id/buttonDaftarLogin"
@@ -161,6 +161,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/daftarLoginText" />
+
+            <TextView
+                android:id="@+id/textLupaPasswordLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/ar_one_sans"
+                android:text="Lupa password?"
+                android:textColor="#0000BC"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/buttonLoginLogin"
+                app:layout_constraintStart_toStartOf="@+id/buttonLoginLogin"
+                app:layout_constraintTop_toBottomOf="@+id/buttonLoginLogin" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
