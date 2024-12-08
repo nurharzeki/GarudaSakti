@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.garudasakti.models.RegisterRequest
 import com.example.garudasakti.models.RegisterResponse
+import com.example.garudasakti.models.VerifyResponse
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
 import com.google.android.material.textfield.TextInputEditText
@@ -42,20 +43,24 @@ class PendaftaranActivity : AppCompatActivity() {
         val password = findViewById<TextInputEditText>(R.id.editPasswordPendaftaran).text.toString()
         val password_confirmation = findViewById<TextInputEditText>(R.id.editRetypePasswordPendaftaran).text.toString()
         val registerRequest = RegisterRequest(username, name, email, password, password_confirmation)
-        apiService.registerUser(registerRequest).enqueue(object : Callback<RegisterResponse> {
-            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+        apiService.registerUser(registerRequest).enqueue(object : Callback<VerifyResponse> {
+            override fun onResponse(call: Call<VerifyResponse>, response: Response<VerifyResponse>) {
                 if (response.isSuccessful) {
-                    val successResponse = response.body()
-                    Toast.makeText(this@PendaftaranActivity, successResponse?.message ?: "Pendaftaran berhasil", Toast.LENGTH_LONG).show()
-                    val token = response.body()?.token
-                    val userName = response.body()?.created_account?.name
-                    val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putString("auth_token", token)
-                    editor.putString("customer_name", userName)
-                    editor.putInt("is_member", 0)
-                    editor.apply()
-                    val intent = Intent(this@PendaftaranActivity, PendaftaranBerhasilActivity::class.java)
+//                    val successResponse = response.body()
+//                    Toast.makeText(this@PendaftaranActivity, successResponse?.message ?: "Pendaftaran berhasil", Toast.LENGTH_LONG).show()
+//                    val token = response.body()?.token
+//                    val userName = response.body()?.created_account?.name
+//                    val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+//                    val editor = sharedPreferences.edit()
+//                    editor.putString("auth_token", token)
+//                    editor.putString("customer_name", userName)
+//                    editor.putInt("is_member", 0)
+//                    editor.apply()
+                    val intent = Intent(this@PendaftaranActivity, VerifikasiPendaftaranActivity::class.java)
+                    intent.putExtra("username", username)
+                    intent.putExtra("name", name)
+                    intent.putExtra("email", email)
+                    intent.putExtra("password", password)
                     startActivity(intent)
                     finish()
                 } else {
@@ -63,7 +68,7 @@ class PendaftaranActivity : AppCompatActivity() {
                     handleErrorResponse(errorResponse)
                 }
             }
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+            override fun onFailure(call: Call<VerifyResponse>, t: Throwable) {
                 Toast.makeText(this@PendaftaranActivity, "Gagal terhubung ke server", Toast.LENGTH_SHORT).show()
             }
         })
