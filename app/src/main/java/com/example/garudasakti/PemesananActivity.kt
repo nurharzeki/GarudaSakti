@@ -233,7 +233,7 @@ class PemesananActivity : AppCompatActivity() {
                 val selectedTime = jamDipilih
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle("Pilih Metode Pembayaran")
-                builder.setItems(arrayOf("Bayar Langsung", "Bayar dengan Saldo", "Penukaran Poin")) { dialog, which ->
+                builder.setItems(arrayOf("Bayar Non Tunai", "Bayar dengan Saldo", "Penukaran Poin")) { dialog, which ->
                     when (which) {
                         0 -> {
                             if (is_member == 0){

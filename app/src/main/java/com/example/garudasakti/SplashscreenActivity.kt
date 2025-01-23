@@ -20,7 +20,6 @@ class SplashscreenActivity : AppCompatActivity() {
             insets
         }
 
-
         // Tambahkan delay 1 detik
         Handler(Looper.getMainLooper()).postDelayed({
             val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
@@ -38,8 +37,5 @@ class SplashscreenActivity : AppCompatActivity() {
                 finish()
             }
         }, 800) // 1000 ms = 1 detik
-
-
-
     }
 }
