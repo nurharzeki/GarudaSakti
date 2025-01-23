@@ -3,6 +3,7 @@ package com.example.garudasakti
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,7 @@ import com.example.garudasakti.adapters.LapanganAdapter
 import com.example.garudasakti.models.LapanganHome
 import com.example.garudasakti.retro.MainInterface
 import com.example.garudasakti.retro.RetrofitConfig
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
+//        createToken()
         val retrofit = RetrofitConfig().getRetrofitClientInstance()
         apiInterface = retrofit.create(MainInterface::class.java)
         if(token == null){
@@ -157,4 +160,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+//    private fun createToken(){
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+//            if(!task.isSuccessful){
+//                return@OnCompleteListener
+//            }
+//            val token = task.result
+//            Log.d("FCM__TOKEN", token)
+//        })
+//    }
+
 }
